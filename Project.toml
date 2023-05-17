@@ -1,0 +1,9 @@
+name = "ExtensibleHMC"
+uuid = "abc9d2d2-04d7-4b9f-b395-0339a31a96f1"
+authors = ["Martin Ståhlgren <martin.stahlgren@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+ComposableDistributions = "6948db4f-7a78-45c0-821d-d9cc157bd434"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
