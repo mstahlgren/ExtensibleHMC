@@ -1,25 +1,36 @@
-export sample
+import StatsBase: StatsBase, sample
 
-function StatsBase.sample(q₀::Vector{Float64}, θ::Hamiltonian, ϕ::Integrator, σ::Sampler)
-    p₀ = randn(size(q₀))
-    path = ϕ(q₀, p₀, ∇(θ))
-    return σ(path, θ)
+export Sample, sample
+
+# CONSIDER: Kinetic energy? Potential energy?
+struct Sample
+    q::Vector{Float64}
+    accepted::Bool
+    path::Vector{State}
 end
 
-function StatsBase.sample(n, q₀::Vector{Float64}, θ::Hamiltonian, ϕ::Integrator, σ::Sampler)
-    samples = Vector{typeof(q₀)}(undef, n)
+function metropolis(path, θ)
+    s₀ = first(path)
+    s₁ = last(path)
+    ΔH = sum(θ(s₀)) - sum(θ(s₁))
+    return ΔH > 0.0 || exp(ΔH) > rand() ? q(s₁) : q(s₀)
+end
+
+function StatsBase.sample(q₀::Vector{Float64}, θ::Hamiltonian, ϕ::Integrator)
+    p₀ = θ.mass.L * randn(size(q₀)) # This isn't very clear
+    path = ϕ(State(q₀, p₀), θ)
+    q₁ = metropolis(path, θ)
+    return Sample(q₁, q₀ != q₁, path)
+end
+
+function StatsBase.sample(n, q::Vector{Float64}, θ::Hamiltonian, ϕ::Integrator)
+    samples = Vector{Sample}(undef, n)
     for i in 1:n
-        q₀ = sample(q₀, θ, ϕ, σ)
-        samples[i] = q₀
+        s = sample(q, θ, ϕ)
+        samples[i] = s
+        q = s.q
     end
     return samples
 end
-# function plot_dlli(q, p, fun, tc, ϵ)
-#     P₁ = dlli(q, p, fun, tc, ϵ)
-#     q̂, p̂ = last(P₁)
-#     P₂ = dlli(q̂, -p̂, fun, tc, ϵ)
-#     d₁ = reduce(hcat, [vcat(x...) for x in P₁])'
-#     d₂ = reduce(hcat, [vcat(x...) for x in P₂])'
-#     plot(d₁[:,1], d₁[:,2])
-#     scatter!(d₂[:,1], d₂[:,2])
-# end
+
+Base.Matrix(samples::Vector{Sample}) = reduce(hcat, [s.q for s in samples])'

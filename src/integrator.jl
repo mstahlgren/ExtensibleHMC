@@ -9,29 +9,19 @@ struct Leapfrog{T <: Terminator} <: Integrator
     tc::T
 end
 
-# TODO: Incorporate mass into hamiltonian equations
 # CONSIDER: Use pullback and grab ll when generating path
-function (x::Leapfrog)(q, p, f)
-    path = [(q, p)]
-    p -= 0.5 * x.ϵ * f(q)
-    while !x.tc(path)
-        q += x.ϵ * p
-        p -= x.ϵ * f(q)
-        push!(path, (q, p))
+function (x::Leapfrog)(s, θ)
+    s = copy(s)
+    path = [copy(s)]
+    df = ∇(θ)
+    a = df(q(s))
+    while true
+        p(s) .-= 0.5 * x.ϵ * a
+        q(s) .+= x.ϵ * (θ.mass\p(s))
+        a = df(q(s))
+        p(s) .-= 0.5 * x.ϵ * a
+        push!(path, copy(s))
+        x.tc(path) && break
     end
-    q += x.ϵ * p
-    p -= 0.5 * x.ϵ * f(q)
-    push!(path, (q, p))
     return path
 end
-
-# function (x::Leapfrog)(q, p, f::Function)
-#     p -= 0.5 * x.ϵ * f(q)
-#     for i in range(length = x.L - 1)
-#         q += x.ϵ * p
-#         p -= x.ϵ * f(q)
-#     end
-#     q += x.ϵ * p
-#     p -= 0.5 * x.ϵ * f(q)
-#     return q, p
-# end
