@@ -25,7 +25,7 @@ function Base.summary(samples::Vector{Sample})
     println("Average trajectory length: ", sum([length(s.path) for s in samples])/length(samples))
 end
 
-function Plots.plot(path::Vector{State}, id1 = 1, id2 = 2)
+function Plots.plot(path::Vector{State}, id1 = 1, id2 = 1)
     Q = reduce(hcat, [s.q for s in path])'
     P = reduce(hcat, [s.p for s in path])'
 
