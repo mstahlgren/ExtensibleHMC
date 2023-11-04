@@ -9,7 +9,6 @@ struct Leapfrog{T <: Terminator} <: Integrator
     tc::T
 end
 
-# CONSIDER: Use pullback and grab ll when generating path
 function (x::Leapfrog)(s, θ)
     s = copy(s)
     path = [copy(s)]

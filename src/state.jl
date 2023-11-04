@@ -1,8 +1,8 @@
 export State, p, q
 
-struct State
-    q::Vector{Float64}
-    p::Vector{Float64}
+struct State{T} where T <: AbstractVecOrMat
+    q::Vector{T}
+    p::Vector{T}
 end
 
 Base.copy(s::State) = State(q(s) |> copy, p(s) |> copy)

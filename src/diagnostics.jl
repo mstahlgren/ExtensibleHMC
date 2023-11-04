@@ -4,28 +4,25 @@ import Plots: Plots, plot, scatter, quiver!
 export effective_size, effective_size2, autocor, acceptance_rate
 export path_plot, plot, scatter, density
 
-# Here I am assuming autocor operates on each column in a matrix
 StatsBase.autocor(samples::Vector{Sample}) = autocor(Matrix(samples))
 
-# Canonical. Suggests broken level negative correlation is good
-effective_size(x) = length(x) / (1 + 2 * sum(autocor(x)[2:end,:]))
+effective_size(x) = length(x) / (1 + 2 * sum(autocor(x)[2:end,:])/length(x[1].q))
 
-# Pretty effective. Sometimes seems too small?
-effective_size2(x) = length(x) / (1 + 2 * sum(abs.(autocor(x)[2:end,:])))
+effective_size2(x) = length(x) / (1 + 2 * sum(abs.(autocor(x)[2:end,:]))/length(x[1].q))
 
 acceptance_rate(x) = count([s.accepted for s in x]) / length(x)
 
 function Base.summary(samples::Vector{Sample})
-    M = Matrix(samples)
-    println("Number of free variables: ", size(M)[2])
+    println("Number of free variables: ", length(samples[1].q))
     println("Number of samples: ", length(samples))
-    println("Effective size: ", effective_size(M))
-    println("Effective size 2: ", effective_size2(M))
+    println("Effective size: ", effective_size(samples))
+    println("Effective size 2: ", effective_size2(samples))
     println("Acceptance rate: ", count([s.accepted for s in samples])/length(samples))
     println("Average trajectory length: ", sum([length(s.path) for s in samples])/length(samples))
+    println("Maximum trajectory length: ", maximum([length(s.path) for s in samples]))
 end
 
-function Plots.plot(path::Vector{State}, id1 = 1, id2 = 1)
+function Plots.plot(path::Vector{State}, id1 = 1, id2 = 2)
     Q = reduce(hcat, [s.q for s in path])'
     P = reduce(hcat, [s.p for s in path])'
 
@@ -37,7 +34,6 @@ function Plots.plot(path::Vector{State}, id1 = 1, id2 = 1)
     quiver!(Q[:,id1], Q[:,id2], quiver = (QD[:,id1], QD[:,id2]))
 end
 
-# TODO: Put each variable in separate plots
 function Plots.plot(samples::Vector{Sample}, idx = 1)
     Matrix(samples)[:,idx] |> plot
 end
