@@ -1,6 +1,6 @@
 export State, p, q
 
-struct State{T} where T <: AbstractVecOrMat
+struct State{T <: AbstractVecOrMat}
     q::Vector{T}
     p::Vector{T}
 end

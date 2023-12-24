@@ -2,11 +2,11 @@ import StatsBase: StatsBase, sample
 
 export Sample, sample
 
-struct Sample{T} where T <: AbstractVecOrMat
+struct Sample{T <: AbstractVecOrMat}
     state::T
     ll::Float64
     accepted::Bool
-    path::Vector{Phase}
+    path::Vector{State}
 end
 
 function metropolis(s₀, s₁, θ)
