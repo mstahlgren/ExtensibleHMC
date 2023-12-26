@@ -36,7 +36,7 @@ function (::FadedOrUturn)(path)
     dq = q(s₁) - q(s₀)
     ndq = norm(dq)
     π₀ = sum(dq .* p(s₀)) / ndq / norm(p(s₀))
-    π₁ = sum(dq .* p(s₁)) / ndq / norm(p(p₁))
+    π₁ = sum(dq .* p(s₁)) / ndq / norm(p(s₁))
     return π₀ < rand() || π₁ < rand()
 end
 
