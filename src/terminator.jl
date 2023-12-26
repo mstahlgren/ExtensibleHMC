@@ -26,14 +26,13 @@ function (tc::StaticLength)(path) length(path) == tc.L + 1 end
 
 # NOTE: Does not fulfill detailed balance
 function (::NoUturn)(path)
-    s₀ = first(path)
-    s₁ = last(path)
+    s₀, s₁ = path |> first |> vec, path |> last |> vec
     π = (q(s₁) - q(s₀))' * p(s₁)
     return π < rand()
 end
 
 function (::FadedOrUturn)(path)
-    s₀, s₁ = first(path), last(path)
+    s₀, s₁ = path |> first |> vec, path |> last |> vec
     dq = q(s₁) - q(s₀)
     ndq = norm(dq)
     π₀ = dq' * p(s₀) / ndq / norm(p(s₀))
@@ -42,7 +41,7 @@ function (::FadedOrUturn)(path)
 end
 
 function (::FadedOrUturn2)(path)
-    s₀, s₁ = first(path), last(path)
+    s₀, s₁ = path |> first |> vec, path |> last |> vec
     dq = q(s₁) - q(s₀)
     ndq = norm(dq)
     nps = norm(p(s₀) + p(s₁))
@@ -53,8 +52,7 @@ end
 
 # Struggles in low dimensions. Great in large.
 function (::FadedAndUturn)(path)
-    s₀ = first(path)
-    s₁ = last(path)
+    s₀, s₁ = path |> first |> vec, path |> last |> vec
     dq = q(s₁) - q(s₀)
     nq = sqrt(dq' * dq)
     π₀ = dq' * p(s₀) / nq / sqrt(p(s₀)' * p(s₀))
@@ -63,7 +61,7 @@ function (::FadedAndUturn)(path)
 end
 
 function (::FadedAndUturn2)(path)
-    s₀, s₁ = first(path), last(path)
+    s₀, s₁ = path |> first |> vec, path |> last |> vec
     dq = q(s₁) - q(s₀)
     ndq = norm(dq)
     π₀ = dq' * p(s₀) / ndq / norm(p(s₁), 1) / norm(p(s₀), 1)
@@ -74,16 +72,14 @@ end
 # NOTE: Likely not ergodic
 # NOTE: P₀+Pₜ is seemingly proportional to Q₁-Q₀
 function (::SymmetricUturn)(path) 
-    s₀ = first(path)
-    s₁ = last(path)
+    s₀, s₁ = path |> first |> vec, path |> last |> vec
     return (q(s₁) - q(s₀))' * (p(s₁) + p(s₀)) < 0.0
 end
 
 # NOTE: Likely not ergodic
 # NOTE: P₀+Pₜ is seemingly proportional to Q₁-Q₀
 function (::Cosθ)(path)
-    s₀ = first(path)
-    s₁ = last(path)
+    s₀, s₁ = path |> first |> vec, path |> last |> vec
     A, B = q(s₁) - q(s₀), p(s₁) + p(s₀)
     return (A'B) < rand() * norm(s₀) * norm(S₁)
 end
