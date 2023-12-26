@@ -34,7 +34,8 @@ end
 
 function (::FadedOrUturn)(path)
     s₀, s₁ = first(path), last(path)
-    dq, ndq = q(s₁) - q(s₀), norm(dq)
+    dq = q(s₁) - q(s₀)
+    ndq = norm(dq)
     π₀ = dq' * p(s₀) / ndq / norm(p(s₀))
     π₁ = dq' * p(s₁) / ndq / norm(p(s₁))
     return π₀ < rand() || π₁ < rand()
