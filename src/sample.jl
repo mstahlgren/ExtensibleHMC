@@ -10,7 +10,6 @@ struct Sample{T <: AbstractVecOrMat}
 end
 
 function metropolis(s₀, s₁, θ)
-    return s₀, s₁, θ
     ΔH = sum(θ(s₀)) - sum(θ(s₁))
     return ΔH > 0.0 || exp(ΔH) > rand() ? q(s₁) : q(s₀)
 end

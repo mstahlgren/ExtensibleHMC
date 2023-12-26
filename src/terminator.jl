@@ -33,12 +33,10 @@ end
 
 function (::FadedOrUturn)(path)
     s₀, s₁ = path |> first, path |> last
-    q₀, q₁= s₀ |> q |> vec, s₁ |> q |> vec
-    p₀, p₁ = s₀ |> p |> vec, s₁ |> p |> vec
-    dq = q₁ - q₀
+    dq = q(s₁) - q(s₀)
     ndq = norm(dq)
-    π₀ = dq' * p₀ / ndq / norm(p₀)
-    π₁ = dq' * p₁ / ndq / norm(p₁)
+    π₀ = sum(dq .* p(s₀)) / ndq / norm(p(s₀))
+    π₁ = sum(dq .* p(s₁)) / ndq / norm(p(p₁))
     return π₀ < rand() || π₁ < rand()
 end
 
