@@ -18,7 +18,7 @@ function StatsBase.sample(q₀::AbstractVecOrMat, θ::Hamiltonian, ϕ::Integrato
     p₀ = θ.mass.L * randn(q₀ |> size)
     path = ϕ(State(q₀, p₀), θ)
     s₁ = metropolis(first(path), rand(path), θ)
-    return Sample(q₁, θ(s₁)[1], q₀ != q(s₁), path)
+    return Sample(q(s₁), θ(s₁)[1], q₀ != q(s₁), path)
 end
 
 function StatsBase.sample(q::T, θ::Hamiltonian, ϕ::Integrator, n) where T <: AbstractVecOrMat
