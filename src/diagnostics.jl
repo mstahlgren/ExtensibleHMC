@@ -2,7 +2,7 @@ import StatsBase: Histogram, autocor, fit
 import Plots: Plots, plot, scatter, quiver!
 
 export effective_size, effective_size2, autocor, acceptance_rate
-export path_plot, plot, scatter, density
+export plot, scatter, density
 
 StatsBase.autocor(samples::Vector{Sample}) = autocor(Matrix(samples))
 
