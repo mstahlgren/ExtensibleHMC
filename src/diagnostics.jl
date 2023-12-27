@@ -43,11 +43,11 @@ function Plots.scatter(samples::Vector{Sample}, id1 = 1, id2 = 2)
     scatter(M[:,id1], M[:,id2])
 end
 
-function density(samples::Vector{Sample}, idx::Int = 1)
-    M = Matrix(samples)[:,idx]
-    low = minimum(M)
-    high = maximum(M)
+function density(samples::Vector{Sample}, idx = 1)
+    S = [s.state[idx...] for s in samples]
+    low = minimum(S)
+    high = maximum(S)
     bins = low:(high-low)/32:high
-    hist = fit(Histogram, M, bins)
+    hist = fit(Histogram, S, bins)
     plot(hist, legend = false)
 end
