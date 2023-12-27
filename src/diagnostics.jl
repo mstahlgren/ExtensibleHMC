@@ -35,7 +35,7 @@ function Plots.plot(path::Vector{State}, id1 = 1, id2 = 2)
 end
 
 function Plots.plot(samples::Vector{Sample}, idx = 1)
-    Matrix(samples)[:,idx] |> plot
+    [s.state[idx...] for s in samples] |> plot
 end
 
 function Plots.scatter(samples::Vector{Sample}, id1 = 1, id2 = 2)
