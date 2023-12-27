@@ -37,7 +37,7 @@ end
 end =#
 
 function Plots.plot(samples::Vector{Sample{T}}, idx...) where T
-    extract(samples, idx) |> plot
+    extract(samples, idx...) |> plot
 end
 
 function Plots.scatter(samples::Vector{Sample{T}}, idx₁, idx₂) where T

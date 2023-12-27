@@ -6,10 +6,8 @@ abstract type Hamiltonian end
 
 struct Euclidean{T} <: Hamiltonian
     U::Function # Potential energy | Negative PDF
-    mass::Cholesky{T}
+    mass::T
 end
-
-Euclidean(U, x::AbstractMatrix) = Euclidean(U, cholesky(x))
 
 ∇(H::Hamiltonian) = x->gradient(H.U, x)[1]
 
