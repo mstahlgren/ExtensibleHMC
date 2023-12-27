@@ -1,4 +1,4 @@
-import StatsBase: Histogram, autocor, fit
+import StatsBase: mean, quantile, Histogram, autocor, fit
 import Plots: Plots, plot, scatter, quiver!
 
 export effective_size, effective_size2, autocor, acceptance_rate
@@ -6,20 +6,19 @@ export plot, scatter, density
 
 StatsBase.autocor(samples::Vector{Sample}) = autocor(Matrix(samples))
 
-effective_size(x) = length(x) / (1 + 2 * sum(autocor(x)[2:end,:])/length(x[1].q))
+#effective_size(x) = length(x) / (1 + 2 * sum(autocor(x)[2:end,:])/length(x[1].q))
 
-effective_size2(x) = length(x) / (1 + 2 * sum(abs.(autocor(x)[2:end,:]))/length(x[1].q))
+#effective_size2(x) = length(x) / (1 + 2 * sum(abs.(autocor(x)[2:end,:]))/length(x[1].q))
 
-acceptance_rate(x) = count([s.accepted for s in x]) / length(x)
+acceptance_rate(x) = mean([s.accepted for s in x])
 
 function Base.summary(samples::Vector{Sample})
     println("Number of free variables: ", length(samples[1].q))
     println("Number of samples: ", length(samples))
-    println("Effective size: ", effective_size(samples))
-    println("Effective size 2: ", effective_size2(samples))
-    println("Acceptance rate: ", count([s.accepted for s in samples])/length(samples))
-    println("Average trajectory length: ", sum([length(s.path) for s in samples])/length(samples))
-    println("Maximum trajectory length: ", maximum([length(s.path) for s in samples]))
+    #println("Effective size: ", effective_size(samples))
+    #println("Effective size 2: ", effective_size2(samples))
+    println("Acceptance rate: ", acceptance_rate(samples))
+    println("Trajectory length: ", quantile([length(s.path) for s in samples], (0, 0.1, 0.5, 0.9, 1)))
 end
 
 function Plots.plot(path::Vector{State}, id1 = 1, id2 = 2)
