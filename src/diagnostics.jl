@@ -19,6 +19,7 @@ function Base.summary(samples::Vector{Sample{T}}) where T
     #println("Effective size 2: ", effective_size2(samples))
     println("Acceptance rate: ", acceptance_rate(samples))
     println("Trajectory length: ", quantile([length(s.path) for s in samples], (0, 0.1, 0.5, 0.9, 1)))
+    println("Posterior ll: ", quantile([s.ll for s in samples], ((0, 0.1, 0.5, 0.9, 1))))
 end
 
 function Plots.plot(path::Vector{State}, id1 = 1, id2 = 2)
