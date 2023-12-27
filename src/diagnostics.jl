@@ -13,7 +13,7 @@ StatsBase.autocor(samples::Vector{Sample}) = autocor(Matrix(samples))
 acceptance_rate(x) = mean([s.accepted for s in x])
 
 function Base.summary(samples::Vector{Sample{T}}) where T
-    println("Number of free variables: ", length(samples[1].q))
+    println("Number of free variables: ", length(samples[1].state))
     println("Number of samples: ", length(samples))
     #println("Effective size: ", effective_size(samples))
     #println("Effective size 2: ", effective_size2(samples))
