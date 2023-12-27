@@ -6,7 +6,7 @@ struct Sample{T <: AbstractVecOrMat}
     state::T
     ll::Float64
     accepted::Bool
-    path::Vector{State}
+    path::Vector{State{T}}
 end
 
 function metropolis(s₀, s₁, θ)
