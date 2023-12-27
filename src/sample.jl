@@ -11,14 +11,14 @@ end
 
 function metropolis(s₀, s₁, θ)
     ΔH = sum(θ(s₀)) - sum(θ(s₁))
-    return ΔH > 0.0 || exp(ΔH) > rand() ? q(s₁) : q(s₀)
+    return ΔH > 0.0 || exp(ΔH) > rand() ? s₁ : s₀
 end
 
 function StatsBase.sample(q₀::AbstractVecOrMat, θ::Hamiltonian, ϕ::Integrator)
     p₀ = θ.mass.L * randn(q₀ |> size)
     path = ϕ(State(q₀, p₀), θ)
-    q₁ = metropolis(first(path), rand(path), θ)
-    return Sample(q₁, θ(q₁)[1], q₀ != q₁, path)
+    s₁ = metropolis(first(path), rand(path), θ)
+    return Sample(q₁, θ(s₁)[1], q₀ != q(s₁), path)
 end
 
 function StatsBase.sample(q::T, θ::Hamiltonian, ϕ::Integrator, n) where T <: AbstractVecOrMat

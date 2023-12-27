@@ -13,5 +13,4 @@ Euclidean(U, x::AbstractMatrix) = Euclidean(U, cholesky(x))
 
 ∇(H::Hamiltonian) = x->gradient(H.U, x)[1]
 
-# (H::Euclidean)(s) = H.U(q(s)), 0.5*p(s)'*(H.mass\p(s))
 (H::Euclidean)(s) = H.U(q(s)), 0.5*sum(p(s).*(H.mass\p(s)))
