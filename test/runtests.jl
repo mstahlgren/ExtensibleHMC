@@ -1,9 +1,7 @@
 using ExtensibleHMC
 using Test
 
-import LinearAlgebra: I
-
-H = Euclidean(x->x'x, I(1))
+H = Euclidean(x->x'x, UnitMass())
 L = Leapfrog(0.05, StaticLength(3))
 
 @testset "Integrators" begin
@@ -12,5 +10,5 @@ L = Leapfrog(0.05, StaticLength(3))
 end
 
 @testset "Samplers" begin
-    @test sample(3, [0.0], H, L) |> length == 3
+    @test sample([0.0], H, L, 3) |> length == 3
 end
