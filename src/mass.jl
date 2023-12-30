@@ -20,6 +20,6 @@ Base.:*(m::DenseMass, x) = m.value * x
 
 Base.:\(::UnitMass, x) = x
 
-Base.:\(m::DiagMass, x) = m.value\x
+Base.:\(m::DiagMass, x) = (m.value.^2)\x
 
 Base.:\(m::DenseMass, x) = Cholesky(m.value)\x
