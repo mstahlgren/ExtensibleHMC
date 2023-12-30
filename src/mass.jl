@@ -9,7 +9,7 @@ struct DiagMass
 end
 
 struct DenseMass
-    value::LowerTruangular{Float64}
+    value::LowerTriangular{Float64}
 end
 
 Base.:*(::UnitMass, x) = x
