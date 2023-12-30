@@ -15,7 +15,7 @@ function metropolis(s₀, s₁, θ)
 end
 
 function StatsBase.sample(q₀::AbstractVecOrMat, θ::Hamiltonian, ϕ::Integrator)
-    p₀ = θ.mass.L * randn(q₀ |> size)
+    p₀ = θ.mass * randn(q₀ |> size)
     path = ϕ(State(q₀, p₀), θ)
     s₁ = metropolis(first(path), rand(path), θ)
     return Sample(q(s₁), θ(s₁)[1], q₀ != q(s₁), path)

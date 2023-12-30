@@ -4,7 +4,7 @@ export Euclidean, ∇
 
 abstract type Hamiltonian end
 
-struct Euclidean{T} <: Hamiltonian
+struct Euclidean{T <: Mass} <: Hamiltonian
     U::Function # Potential energy | Negative PDF
     mass::T
 end
