@@ -4,13 +4,13 @@ export UnitMass, DiagMass, DenseMass
 
 abstract type Mass end
 
-struct UnitMass end
+struct UnitMass <: Mass end
 
-struct DiagMass
+struct DiagMass <: Mass
     value::Diagonal{Float64}
 end
 
-struct DenseMass
+struct DenseMass <: Mass
     value::LowerTriangular{Float64}
 end
 
