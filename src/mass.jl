@@ -1,5 +1,7 @@
 import LinearAlgebra: I, Diagonal, LowerTriangular, Cholesky
 
+export UnitMass, DiagMass, DenseMass
+
 abstract type Mass end
 
 struct UnitMass end
