@@ -7,7 +7,7 @@ struct NUTS <: Sampler
 end
 
 # CONSIDER: How to report divergences?
-function sample(ϕ::NUTS, θ, q₀)
+function StatsBase.sample(ϕ::NUTS, θ, q₀)
     s₀ = State(q₀, mass(θ) * rand(length(q₀)), q₀ |> ∇(θ))
     u = rand() * exp(reduce(-, θ(s₀)))
     s⁻, s⁺, s₁, j, n, h = s₀, s₀, s₀, 0, 1, true

@@ -1,11 +1,9 @@
 import Zygote: gradient
 import LinearAlgebra: ⋅
 
-export Euclidean, ∇, mass
+export Hamiltonian, ∇, mass
 
-abstract type Hamiltonian end
-
-struct Euclidean{T <: Mass} <: Hamiltonian
+struct Hamiltonian{T <: Mass}
     U::Function # Potential energy | Negative PDF
     mass::T # LLᵀ decomposition
 end
