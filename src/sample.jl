@@ -1,4 +1,4 @@
-import StatsBase: StatsBase
+import StatsBase: StatsBase, sample
 
 export Sample, sample
 
