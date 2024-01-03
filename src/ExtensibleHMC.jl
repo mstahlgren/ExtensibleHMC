@@ -5,6 +5,7 @@ include("mass.jl")
 include("hamiltonian.jl")
 include("terminator.jl")
 include("integrator.jl")
+include("nuts.jl")
 include("sample.jl")
 include("diagnostics.jl")
 

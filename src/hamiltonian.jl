@@ -1,14 +1,17 @@
-import LinearAlgebra: Cholesky, cholesky
+import Zygote: gradient
+import LinearAlgebra: ⋅
 
-export Euclidean, ∇
+export Euclidean, ∇, mass
 
 abstract type Hamiltonian end
 
 struct Euclidean{T <: Mass} <: Hamiltonian
     U::Function # Potential energy | Negative PDF
-    mass::T
+    mass::T # LLᵀ decomposition
 end
 
 ∇(H::Hamiltonian) = x->gradient(H.U, x)[1]
 
-(H::Euclidean)(s) = H.U(q(s)), 0.5*sum(p(s).*(H.mass\p(s)))
+(H::Hamiltonian)(s) = H.U(q(s)), 0.5 * p(s) ⋅ (H.mass\p(s))
+
+mass(H::Hamiltonian) = H.mass
