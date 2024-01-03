@@ -8,7 +8,7 @@ end
 
 # CONSIDER: How to report divergences?
 function StatsBase.sample(ϕ::NUTS, θ, q₀)
-    s₀ = State(q₀, mass(θ) * rand(q₀ |> size), q₀ |> ∇(θ))
+    s₀ = State(q₀, mass(θ) * randn(q₀ |> size), q₀ |> ∇(θ))
     u = rand() * exp(reduce(-, θ(s₀)))
     s⁻, s⁺, s₁, j, n, h = s₀, s₀, s₀, 0, 1, true
     while h
