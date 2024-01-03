@@ -13,6 +13,9 @@ struct Sample{T <: AbstractVecOrMat}
     path::Vector{State{T}}
 end
 
+# CONSIDER: Time of samples?
+# CONSIDER: Progress bar?
+# CONSIDER: How to report divergences?
 function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::T, n) where T <: AbstractVecOrMat
     samples = Vector{Sample{T}}(undef, n)
     for i in 1:n

@@ -6,7 +6,6 @@ struct NUTS <: Sampler
     ϵ::Float64
 end
 
-# CONSIDER: How to report divergences?
 function StatsBase.sample(ϕ::NUTS, θ, q₀)
     s₀ = State(q₀, mass(θ) * randn(q₀ |> size), q₀ |> ∇(θ))
     u = rand() * exp(reduce(-, θ(s₀)))
