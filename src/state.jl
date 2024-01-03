@@ -1,12 +1,22 @@
-export State, p, q
-
 struct State{T <: AbstractVecOrMat}
-    q::T
-    p::T
+    pos::T
+    mom::T
+    acc::T
 end
 
-Base.copy(s::State) = State(q(s) |> copy, p(s) |> copy)
+Base.copy(s::State) = State(q(s) |> copy, p(s) |> copy, a(s) |> copy)
 
-q(s::State) = s.q
+q(s::State) = s.pos
 
-p(s::State) = s.p
+p(s::State) = s.mom
+
+a(s::State) = s.acc
+
+function leapfrog(θ, s₀, ϵ)
+    s₁ = copy(s₀)
+    p(s₁) .-= 0.5 * ϵ * a(s₁)
+    q(s₁) .+= ϵ * (θ.mass\p(s₁))
+    a(s₁) .= q(s₁) |> ∇(θ)
+    p(s₁) .-= 0.5 * ϵ * a(s₁)
+    return s₁
+end
