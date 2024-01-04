@@ -1,4 +1,4 @@
-import StatsBase: mean, quantile, Histogram, fit
+import StatsBase: mean, quantile, Histogram, fit, autocor
 import Plots: Plots, plot, scatter
 
 export summary, acceptrate
