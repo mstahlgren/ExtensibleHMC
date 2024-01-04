@@ -14,9 +14,9 @@ a(s::State) = s.acc
 
 function leapfrog(θ, s₀, ϵ)
     s₁ = copy(s₀)
-    p(s₁) .-= 0.5 * ϵ * a(s₁)
+    p(s₁) .+= 0.5 * ϵ * a(s₁)
     q(s₁) .+= ϵ * (θ.mass\p(s₁))
-    a(s₁) .= q(s₁) |> ∇(θ)
-    p(s₁) .-= 0.5 * ϵ * a(s₁)
+    a(s₁) .= gradient(θ, q(s₁))
+    p(s₁) .+= 0.5 * ϵ * a(s₁)
     return s₁
 end

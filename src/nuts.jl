@@ -7,8 +7,8 @@ struct NUTS <: Sampler
 end
 
 function StatsBase.sample(ϕ::NUTS, θ, q₀)
-    s₀ = State(q₀, mass(θ) * randn(q₀ |> size), q₀ |> ∇(θ))
-    u = rand() * exp(reduce(-, θ(s₀)))
+    s₀ = State(q₀, mass(θ) * randn(q₀ |> size), gradient(θ, q₀))
+    u = rand() * exp(-energy(θ, s₀))
     s⁻, s⁺, s₁, j, n, h = s₀, s₀, s₀, 0, 1, true
     while h
         v = rand([1, -1])
@@ -20,7 +20,7 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀)
         n += n′
         j += 1
     end
-    return Sample(q(s₁), θ(s₁)[1], q₀ != q(s₁))
+    return Sample(q(s₁), potential(θ, s₁), q₀ != q(s₁))
 end
 
 function buildtree(θ, s, u, v, j, ϵ)
@@ -38,8 +38,8 @@ end
 
 function buildleaf(θ, s, u, v, ϵ)
     s′ = leapfrog(θ, s, v * ϵ)
-    δE = reduce(-, θ(s′))
-    n′ = Int(u <= exp(δE))
-    h′ = δE > log(u) - 1000
+    E′ = energy(θ, s′)
+    n′ = Int(u <= exp(-E′))
+    h′ = -E′ > log(u) - 1000
     return s′, s′, s′, n′, h′
 end
