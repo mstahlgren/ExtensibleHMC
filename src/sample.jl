@@ -10,7 +10,6 @@ struct Sample{T <: AbstractVecOrMat}
     value::T
     ll::Float64
     accepted::Bool
-    path::Vector{State{T}}
 end
 
 # CONSIDER: Time of samples?

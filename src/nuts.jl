@@ -20,7 +20,7 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀)
         n += n′
         j += 1
     end
-    return Sample(q(s₁), θ(s₁)[1], q₀ != q(s₁), [s⁻, s₀, s₁, s⁺])
+    return Sample(q(s₁), θ(s₁)[1], q₀ != q(s₁))
 end
 
 function buildtree(θ, s, u, v, j, ϵ)

@@ -11,5 +11,5 @@ function StatsBase.sample(ϕ::HMC, θ::Hamiltonian, q₀::AbstractVecOrMat)
     δH = sum(θ(s₀)) - sum(θ(s₁))
     accepted = δH > 0.0 || exp(δH) > rand()
     s = accepted ? s₁ : s₀
-    return Sample(q(s), θ(s)[1], accepted, [s₀, s₁])
+    return Sample(q(s), θ(s)[1], accepted)
 end
