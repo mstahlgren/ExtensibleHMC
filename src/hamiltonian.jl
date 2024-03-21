@@ -8,7 +8,7 @@ struct Hamiltonian{T <: Mass}
     mass::T # LLᵀ decomposition
 end
 
-gradient(H::Hamiltonian, s) = gradient(H.U, s)
+ForwardDiff.gradient(H::Hamiltonian, s) = gradient(H.U, s)
 
 energy(H::Hamiltonian, s) = kinetic(H, s) + potential(H, s)
 
