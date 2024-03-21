@@ -11,9 +11,8 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀)
     u = rand() * exp(-energy(θ, s₀))
     s⁻, s⁺, s₁, j, n, h = s₀, s₀, s₀, 0, 1, true
     while h
-        v = rand([1, -1])
-        if v == -1 s⁻, _, s′, n′, h′ = buildtree(θ, s⁻, u, v, j, stepsize(ϕ))
-        else _, s⁺, s′, n′, h′ = buildtree(θ, s⁺, u, v, j, stepsize(ϕ)) end
+        if rand(Bool) s⁻, _, s′, n′, h′ = buildtree(θ, s⁻, u, -1, j, stepsize(ϕ))
+        else _, s⁺, s′, n′, h′ = buildtree(θ, s⁺, u, 1, j, stepsize(ϕ)) end
         if h′ && min(1, n′/n) > rand() s₁ = s′ end
         δq = q(s⁺) - q(s⁻)
         h = h′ && δq⋅p(s⁻) >= 0 && δq⋅p(s⁺) >= 0
