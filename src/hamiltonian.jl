@@ -1,4 +1,4 @@
-import ForwardDiff: gradient
+import ForwardDiff: ForwardDiff, gradient
 import LinearAlgebra: ⋅
 
 export Hamiltonian, ∇, mass
