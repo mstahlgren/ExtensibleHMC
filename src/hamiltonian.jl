@@ -1,14 +1,14 @@
-import ForwardDiff: ForwardDiff, gradient
 import LinearAlgebra: ⋅
 
-export Hamiltonian, ∇, mass
+export Hamiltonian, ∇, mass, gradient
 
 struct Hamiltonian{T <: Mass}
     U::Function # Unnormalized log posterior
     mass::T # LLᵀ decomposition
+    ad::Module # AD backend
 end
 
-ForwardDiff.gradient(H::Hamiltonian, s::AbstractArray) = gradient(H.U, s)
+gradient(H::Hamiltonian, s::AbstractArray) = H.ad.gradient(H.U, s)[1]
 
 energy(H::Hamiltonian, s) = kinetic(H, s) + potential(H, s)
 
