@@ -3,9 +3,9 @@ import Zygote: gradient
 
 export Hamiltonian, ∇, mass, gradient
 
-struct Hamiltonian{T <: Mass}
-    U::Function # Unnormalized log posterior
-    mass::T # LLᵀ decomposition
+struct Hamiltonian{P, M <: Mass}
+    U::P # Unnormalized log posterior
+    mass::M # LLᵀ decomposition
 end
 
 gradient(H::Hamiltonian, s::AbstractArray) = gradient(H.U, s)[1]
