@@ -14,13 +14,16 @@ extract(samples::Vector{Sample{T}}, idx...) where T = [s.value[idx...] for s in 
 
 #effective_size2(x) = length(x) / (1 + 2 * sum(abs.(autocor(x)[2:end,:]))/length(x[1].q))
 
-acceptrate(x) = mean([s.accepted for s in x])
+naccepted(x) = sum(s.accepted for s in x)
+
+ndivergences(x) = sum(s.diverged for s in x)
 
 function Base.summary(samples::Vector{Sample{T}}) where T
     println("Number of free variables: ", length(samples[1].value))
     println("Number of samples: ", length(samples))
     println("Autocoorelation τ¹⁻³: ", round.(autocor(extract(samples, 1))[2:4]; digits = 2))
-    println("Acceptance rate: ", round(acceptrate(samples); digits = 2))
+    println("Acceptance rate: ", round(naccepted(samples) / length(samples); digits = 2))
+    println("Divergance rate: ", round(ndivergences(samples) / length(samples); digits = 2))
     println("Posterior ll: ", round.(quantile([s.ll for s in samples], ((0, 0.1, 0.5, 0.9, 1))); digits = 3))
 end
 
@@ -35,8 +38,8 @@ function Plots.scatter(samples::Vector{Sample{T}}, id₁, id₂) where T
     scatter(q₁, q₂)
 end
 
-function density(samples::Vector{Sample}, idx...)
-    S = [s.state[idx...] for s in samples]
+function density(samples::Vector{Sample{T}}, idx...) where T
+    S = [s.value[idx...] for s in samples]
     low = minimum(S)
     high = maximum(S)
     bins = low:(high-low)/32:high
