@@ -10,6 +10,7 @@ struct Sample{T <: AbstractVecOrMat}
     value::T
     ll::Float64
     accepted::Bool
+    diverged::Bool
 end
 
 # CONSIDER: Time of samples?
