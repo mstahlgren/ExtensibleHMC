@@ -4,7 +4,7 @@ struct State{T <: AbstractVecOrMat}
     acc::T
 end
 
-State(θ, q₀) = State(q₀, mass(θ) * randn(q₀ |> size), gradient(θ, q₀)[2])
+State(θ, q₀) = State(q₀, mass(θ) * randn(q₀ |> size), gradient(θ, q₀)[2][1])
 
 Base.copy(s::State) = State(q(s) |> copy, p(s) |> copy, a(s) |> copy)
 
@@ -19,7 +19,7 @@ function leapfrog(θ, s₀, ϵ)
     p(s₁) .+= 0.5 * ϵ * a(s₁)
     q(s₁) .+= ϵ * (θ.mass\p(s₁))
     ll, Δll = gradient(θ, q(s₁))
-    a(s₁) .= Δll
+    a(s₁) .= Δll[1]
     p(s₁) .+= 0.5 * ϵ * a(s₁)
     return ll, s₁
 end
