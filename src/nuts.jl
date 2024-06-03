@@ -15,41 +15,43 @@ function uturn(s⁻, s⁺)
 end
 
 function StatsBase.sample(ϕ::NUTS, θ, q₀)
-    s₀ = State(q₀, mass(θ) * randn(q₀ |> size), gradient(θ, q₀)) # This suggests Chol of Mass
+    s₀ = State(θ, q₀)
     u = rand() * exp(-energy(θ, s₀))
-    s⁻, s⁺, s₁, j, n, t, d = s₀, s₀, s₀, 0, 1, false, false
+    s⁻, s⁺, s₁, j, n, t, d, ll = s₀, s₀, s₀, 0, 1, false, false, θ.density(q₀)
     while true
-        if rand(Bool) s⁻, _, s′, n′, t, d = buildleft(ϕ, θ, s⁻, u, j)
-        else _, s⁺, s′, n′, t, d = buildright(ϕ, θ, s⁺, u, j) end
+        if rand(Bool) s⁻, _, s′, n′, t, d, ll´ = buildleft(ϕ, θ, s⁻, u, j)
+        else _, s⁺, s′, n′, t, d, ll´ = buildright(ϕ, θ, s⁺, u, j) end
         if t || d break end
-        if n′/n > rand() s₁ = s′ end
+        if n′/n > rand() s₁ = s′; ll = ll´ end
         if uturn(s⁻, s⁺) break end
         n += n′
         j += 1
     end
-    return Sample(q(s₁), potential(θ, s₁), q₀ != q(s₁), d)
+    return Sample(q(s₁), ll, q₀ != q(s₁), d)
 end
 
 function buildleft(ϕ, θ, s, u, j)
     if iszero(j) return buildleaf(θ, s, u, -stepsize(ϕ)) end
-    s⁻, s⁺, s₁, n₁, t₁, d₁ = buildleft(ϕ, θ, s, u, j-1)
+    s⁻, s⁺, s₁, n₁, t₁, d₁, ll₁ = buildleft(ϕ, θ, s, u, j-1)
     if d₁ return s⁻, s⁺, s₁, n₁, t₁, true end
-    s⁻, _, s₂, n₂, t₂, d₂ = buildleft(ϕ, θ, s⁻, u, j-1)
-    return s⁻, s⁺, n₂ / (n₁ + n₂) > rand() ? s₁ : s₂, n₁ + n₂, t₁ || t₂ || uturn(s⁻, s⁺), d₂
+    s⁻, _, s₂, n₂, t₂, d₂, ll₂ = buildleft(ϕ, θ, s⁻, u, j-1)
+    n = n₂ / (n₁ + n₂) > rand()
+    return s⁻, s⁺, n ? s₁ : s₂, n₁ + n₂, t₁ || t₂ || uturn(s⁻, s⁺), d₂, n ? ll₁ : ll₂
 end
 
 function buildright(ϕ, θ, s, u, j)
     if iszero(j) return buildleaf(θ, s, u, stepsize(ϕ)) end
-    s⁻, s⁺, s₁, n₁, t₁, d₁ = buildright(ϕ, θ, s, u, j-1)
+    s⁻, s⁺, s₁, n₁, t₁, d₁, ll₁ = buildright(ϕ, θ, s, u, j-1)
     if d₁ return s⁻, s⁺, s₁, n₁, t₁, true end
-    _, s⁺, s₂, n₂, t₂, d₂ = buildright(ϕ, θ, s⁻, u, j-1)
-    return s⁻, s⁺, n₂ / (n₁ + n₂) > rand() ? s₁ : s₂, n₁ + n₂, t₁ || t₂ || uturn(s⁻, s⁺), d₂
+    _, s⁺, s₂, n₂, t₂, d₂, ll₂ = buildright(ϕ, θ, s⁻, u, j-1)
+    n = n₂ / (n₁ + n₂) > rand()
+    return s⁻, s⁺, n ? s₁ : s₂, n₁ + n₂, t₁ || t₂ || uturn(s⁻, s⁺), d₂, n ? ll₁ : ll₂
 end
 
 function buildleaf(θ, s, u, ϵ)
-    s′ = leapfrog(θ, s, ϵ)
-    E = energy(θ, s′)
+    ll, s′ = leapfrog(θ, s, ϵ)
+    E = kinetic(θ, s′) - ll
     n = Int(exp(-E) >= u)
     d = -E < log(u) - 1000
-    return s′, s′, s′, n, false, d
+    return s′, s′, s′, n, false, d, ll
 end

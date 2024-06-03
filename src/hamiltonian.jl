@@ -1,14 +1,17 @@
 import LinearAlgebra: ⋅
-import Zygote: gradient
+import Zygote: pullback
 
-export Hamiltonian, ∇, mass, gradient
+export Hamiltonian, ∇, mass
 
 struct Hamiltonian{P, M <: Mass}
     density::P # Unnormalized log posterior
     mass::M # LLᵀ decomposition
 end
 
-gradient(H::Hamiltonian, s::AbstractArray) = gradient(H.density, s)[1]
+function gradient(H::Hamiltonian, s::AbstractArray) 
+    ll, pb = pullback(H.density, s)
+    return ll, pb(1.0)[1]
+end
 
 energy(H::Hamiltonian, s) = kinetic(H, s) + potential(H, s)
 
