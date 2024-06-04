@@ -16,12 +16,12 @@ end
 function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::T, n, verbose) where T <: AbstractVecOrMat
     samples = Vector{Sample{T}}(undef, n)
     for i in 1:n
-        if verbose print("Sample ", i) end
+        if verbose println("Sample ", i) end
         s = sample(ϕ, θ, q, verbose)
         samples[i] = s
         q = s.value
         if verbose 
-            print(" :: LL ", round(s.ll, digits = 4))
+            print("Completed :: LL ", round(s.ll, digits = 4))
             print(" :: ", s.accepted ? "Accepted" : "Rejected")
             println(s.diverged ? " :: Diverged" : "") 
         end
