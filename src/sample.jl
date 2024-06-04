@@ -17,7 +17,7 @@ function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::T, n, verbose) where 
     samples = Vector{Sample{T}}(undef, n)
     for i in 1:n
         if verbose print("Sample ", i) end
-        s = sample(ϕ, θ, q)
+        s = sample(ϕ, θ, q, verbose)
         samples[i] = s
         q = s.value
         if verbose 
