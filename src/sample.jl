@@ -13,7 +13,7 @@ struct Sample{T <: AbstractVecOrMat}
     diverged::Bool
 end
 
-function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::T, n, verbose) where T <: AbstractVecOrMat
+function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::T, n, verbose = false) where T <: AbstractVecOrMat
     samples = Vector{Sample{T}}(undef, n)
     for i in 1:n
         if verbose println("Sample ", i) end

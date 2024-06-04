@@ -13,7 +13,7 @@ function uturn(s⁻, s⁺)
     return δq⋅p(s⁻) < 0 || δq⋅p(s⁺) < 0
 end
 
-function StatsBase.sample(ϕ::NUTS, θ, q₀, verbose)
+function StatsBase.sample(ϕ::NUTS, θ, q₀, verbose = false)
     s₀ = State(θ, q₀)
     u = rand() * exp(-energy(θ, s₀))
     s⁻, s⁺, s₁, j, n, t, d, ll = s₀, s₀, s₀, 0, 1, false, false, θ.density(q₀)
@@ -21,15 +21,12 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀, verbose)
         if verbose print("New branch :: j ", j) end
         if rand(Bool) s⁻, _, s′, n′, t, d, ll´ = buildleft(ϕ, θ, s⁻, u, j)
         else _, s⁺, s′, n′, t, d, ll´ = buildright(ϕ, θ, s⁺, u, j) end
-        if verbose 
-            println(" :: t ", t, " :: d ", d, " :: uturn ", uturn(s⁻, s⁺))
-        end
+        if verbose println(" :: t ", t, " :: d ", d, " :: uturn ", uturn(s⁻, s⁺)) end
         if t || d break end
         if n′/n > rand() s₁ = s′; ll = ll´ end
         if uturn(s⁻, s⁺) break end
         n += n′
         j += 1
-        if verbose println(s₁) end
     end
     return Sample(q(s₁), ll, q₀ != q(s₁), d)
 end
