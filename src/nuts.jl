@@ -3,7 +3,6 @@ import LinearAlgebra: ⋅
 export NUTS
 
 # CONSIDER: Max tree depth
-# CONSIDER: Use pullback instead of gradient and make use of ll. Measure time
 
 struct NUTS <: Sampler
     ϵ::Float64
