@@ -17,7 +17,7 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀, verbose = false)
     s₀ = State(θ, q₀)
     u = rand() * exp(-energy(θ, s₀))
     s⁻, s⁺, s₁, j, n, t, d, ll = s₀, s₀, s₀, 0, 1, false, false, θ.density(q₀)
-    while true
+    while j <= 8
         if verbose print("New branch :: j ", j) end
         if rand(Bool) s⁻, _, s′, n′, t, d, ll´ = buildleft(ϕ, θ, s⁻, u, j)
         else _, s⁺, s′, n′, t, d, ll´ = buildright(ϕ, θ, s⁺, u, j) end
@@ -28,7 +28,7 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀, verbose = false)
         n += n′
         j += 1
     end
-    return Sample(q(s₁), ll, q₀ != q(s₁), d)
+    return Sample(q(s₁), ll, q₀ != q(s₁), d, j == 8)
 end
 
 function buildleft(ϕ, θ, s, u, j)

@@ -13,5 +13,5 @@ function StatsBase.sample(ϕ::HMC, θ::Hamiltonian, q₀::AbstractVecOrMat)
     d = -abs(δE) < - 1000
     accepted = !d && (δE < 0.0 || exp(-δE) > rand())
     s = accepted ? s₁ : s₀
-    return Sample(q(s), potential(θ, s), accepted, d)
+    return Sample(q(s), potential(θ, s), accepted, d, false)
 end

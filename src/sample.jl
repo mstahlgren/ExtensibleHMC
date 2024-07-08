@@ -11,6 +11,7 @@ struct Sample{T <: AbstractVecOrMat}
     ll::Float64
     accepted::Bool
     diverged::Bool
+    maxdepth::Bool
 end
 
 function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::T, n::Int, verbose = false) where T <: AbstractVecOrMat

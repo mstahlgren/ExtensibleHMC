@@ -18,12 +18,15 @@ naccepted(x) = sum(s.accepted for s in x)
 
 ndivergences(x) = sum(s.diverged for s in x)
 
+nmaxdepth(x) = sum(s.maxdepth for s in x)
+
 function Base.summary(samples::Vector{Sample{T}}) where T
     println("Number of free variables: ", length(samples[1].value))
     println("Number of samples: ", length(samples))
     println("Autocoorelation τ¹⁻³: ", round.(autocor(extract(samples, 1))[2:4]; digits = 2))
     println("Acceptance rate: ", round(naccepted(samples) / length(samples); digits = 2))
     println("Divergance rate: ", round(ndivergences(samples) / length(samples); digits = 2))
+    println("Maxdepth rate: ", round(nmaxdepth(samples) / length(samples); digits = 2)),
     println("Posterior ll: ", round.(quantile([s.ll for s in samples], ((0, 0.1, 0.5, 0.9, 1))); digits = 3))
 end
 
