@@ -15,7 +15,7 @@ end
 
 function StatsBase.sample(ϕ::NUTS, θ, q₀, verbose = false)
     s₀ = State(θ, q₀)
-    u = rand() * exp(-energy(θ, s₀))
+    u = log(rand()) - energy(θ, s₀)
     s⁻, s⁺, s₁, j, n, t, d, ll = s₀, s₀, s₀, 0, 1, false, false, θ.density(q₀)
     while j <= 8
         if verbose print("New branch :: j ", j) end
@@ -52,7 +52,7 @@ end
 function buildleaf(θ, s, u, ϵ)
     ll, s′ = leapfrog(θ, s, ϵ)
     E = kinetic(θ, s′) - ll
-    n = Int(exp(-E) >= u)
-    d = -E < log(u) - 1000
+    n = Int(-E >= u)
+    d = -E < u - 1000
     return s′, s′, s′, n, false, d, ll
 end
