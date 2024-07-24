@@ -21,8 +21,8 @@ function leapfrog(θ, s₀, ϵ)
     s₁ = copy(s₀)
     p(s₁) .+= 0.5 * ϵ * a(s₁)
     q(s₁) .+= ϵ * (θ.mass\p(s₁))
-    s₁.ll, Δll = gradient(θ, q(s₁))
+    ll, Δll = θ(q(s₁))
     a(s₁) .= Δll[1]
     p(s₁) .+= 0.5 * ϵ * a(s₁)
-    return s₁
+    return State(q(s₁), p(s₁), a(s₁), ll)
 end
