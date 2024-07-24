@@ -9,16 +9,16 @@ stepsize(x::Sampler) = x.ϵ
 struct Sample{T <: AbstractVecOrMat}
     value::T
     ll::Float64
+    nsteps::Int
     accepted::Bool
     diverged::Bool
-    maxdepth::Bool
 end
 
-function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::T, n::Int, verbose = false) where T <: AbstractVecOrMat
+function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::T, n::Int; verbose = false) where T <: AbstractVecOrMat
     samples = Vector{Sample{T}}(undef, n)
     for i in 1:n
         if verbose println("Sample ", i) end
-        s = sample(ϕ, θ, q, verbose)
+        s = sample(ϕ, θ, q; verbose = verbose)
         samples[i] = s
         q = s.value
         if verbose 

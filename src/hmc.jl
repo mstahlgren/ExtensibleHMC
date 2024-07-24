@@ -14,5 +14,5 @@ function StatsBase.sample(ϕ::HMC, θ, q₀; verbose = false)
     d = -abs(δE) < - 1000
     accepted = !d && (δE < 0.0 || exp(-δE) > rand())
     s = accepted ? s₁ : s₀
-    return Sample(q(s), potential(θ, s), accepted, d, false)
+    return Sample(q(s), potential(θ, s), ϕ.L, accepted, d)
 end
