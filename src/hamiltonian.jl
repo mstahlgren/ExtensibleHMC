@@ -8,7 +8,7 @@ struct Hamiltonian{P, M <: Mass}
     mass::M # LLᵀ decomposition
 end
 
-(H::Hamiltonian2)(s) = withgradient(H.density, s)
+(H::Hamiltonian)(s) = withgradient(H.density, s)
 
 energy(H::Hamiltonian, s) = kinetic(H, s) + potential(H, s)
 
