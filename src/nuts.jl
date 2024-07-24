@@ -6,7 +6,11 @@ export NUTS
 
 struct NUTS <: Sampler
     ϵ::Float64
+    max_depth::Int
+    max_ΔE::Float64
 end
+
+NUTS(ϵ) = NUTS(ϵ, 10, 1000)
 
 function uturn(s⁻, s⁺)
     δq = q(s⁺) - q(s⁻)
@@ -17,7 +21,7 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀; verbose = false)
     s₀ = State(θ, q₀)
     u = log(rand()) - energy(θ, s₀)
     s⁻, s⁺, s₁, j, n, t, d = s₀, s₀, s₀, 0, 1, false, false
-    while j <= 8
+    while j < ϕ.max_depth
         if verbose print("New branch :: j ", j) end
         if rand(Bool) s⁻, _, s′, n′, t, d = buildleft(ϕ, θ, s⁻, u, j)
         else _, s⁺, s′, n′, t, d = buildright(ϕ, θ, s⁺, u, j) end
@@ -31,7 +35,7 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀; verbose = false)
     return Sample(q(s₁), s₁.ll, q₀ != q(s₁), d, j == 8)
 end
 
-function buildleft(ϕ, θ, s, u, j)
+function buildleft(ϕ::NUTS, θ, s, u, j)
     if iszero(j) return buildleaf(θ, s, u, -stepsize(ϕ)) end
     s⁻, s⁺, s₁, n₁, t₁, d₁, ll₁ = buildleft(ϕ, θ, s, u, j-1)
     if d₁ return s⁻, s⁺, s₁, n₁, t₁, true, Inf end
@@ -40,8 +44,8 @@ function buildleft(ϕ, θ, s, u, j)
     return s⁻, s⁺, n ? s₁ : s₂, n₁ + n₂, t₁ || t₂ || uturn(s⁻, s⁺), d₂
 end
 
-function buildright(ϕ, θ, s, u, j)
-    if iszero(j) return buildleaf(θ, s, u, stepsize(ϕ)) end
+function buildright(ϕ::NUTS, θ, s, u, j)
+    if iszero(j) return buildleaf(ϕ, θ, s, u, stepsize(ϕ)) end
     s⁻, s⁺, s₁, n₁, t₁, d₁ = buildright(ϕ, θ, s, u, j-1)
     if d₁ return s⁻, s⁺, s₁, n₁, t₁, true, Inf end
     _, s⁺, s₂, n₂, t₂, d₂ = buildright(ϕ, θ, s⁻, u, j-1)
@@ -49,10 +53,10 @@ function buildright(ϕ, θ, s, u, j)
     return s⁻, s⁺, n ? s₁ : s₂, n₁ + n₂, t₁ || t₂ || uturn(s⁻, s⁺), d₂
 end
 
-function buildleaf(θ, s, u, ϵ)
+function buildleaf(ϕ::NUTS, θ, s, u, ϵ)
     s′ = leapfrog(θ, s, ϵ)
     E = energy(θ, s′)
     n = Int(-E >= u)
-    d = -E < u - 1000
+    d = -E < u - ϕ.max_ΔE
     return s′, s′, s′, n, false, d
 end
