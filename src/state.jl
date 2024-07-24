@@ -1,25 +1,28 @@
 struct State{T <: AbstractVecOrMat}
-    pos::T
-    mom::T
-    acc::T
+    position::T
+    momentum::T
+    gradient::T
+    ll::Float64
 end
 
-State(θ, q₀) = State(q₀, mass(θ) * randn(q₀ |> size), gradient(θ, q₀)[2][1])
+State(θ, q₀) = begin ll, Δll = θ(q₀); State(q₀, mass(θ) * randn(q₀ |> size), Δll[1], ll) end
 
-Base.copy(s::State) = State(q(s) |> copy, p(s) |> copy, a(s) |> copy)
+Base.copy(s::State) = State(q(s) |> copy, p(s) |> copy, a(s) |> copy, s.ll)
 
-q(s::State) = s.pos
+q(s::State) = s.position
 
-p(s::State) = s.mom
+p(s::State) = s.momentum
 
-a(s::State) = s.acc
+a(s::State) = s.gradient
+
+ll(s::State) = s.ll
 
 function leapfrog(θ, s₀, ϵ)
     s₁ = copy(s₀)
     p(s₁) .+= 0.5 * ϵ * a(s₁)
     q(s₁) .+= ϵ * (θ.mass\p(s₁))
-    ll, Δll = gradient(θ, q(s₁))
+    s₁.ll, Δll = gradient(θ, q(s₁))
     a(s₁) .= Δll[1]
     p(s₁) .+= 0.5 * ϵ * a(s₁)
-    return ll, s₁
+    return s₁
 end
