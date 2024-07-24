@@ -6,7 +6,8 @@ struct HMC <: Sampler
 end
 
 function StatsBase.sample(ϕ::HMC, θ, q₀; verbose = false)
-    s₀, s₁ = State(θ, q₀), leapfrog(θ, s₀, stepsize(ϕ))
+    s₀ = State(θ, q₀)
+    s₁ = leapfrog(θ, s₀, stepsize(ϕ))
     for _ in 2:ϕ.L s₁ = leapfrog(θ, s₁, stepsize(ϕ)) end
     E₁ = energy(θ, s₁)
     δE = E₁ - energy(θ, s₀)
