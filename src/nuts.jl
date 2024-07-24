@@ -32,14 +32,14 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀; verbose = false)
         n += n′
         j += 1
     end
-    return Sample(q(s₁), s₁.ll, q₀ != q(s₁), d, j == 8)
+    return Sample(q(s₁), s₁.ll, j, q₀ != q(s₁), d)
 end
 
 function buildleft(ϕ::NUTS, θ, s, u, j)
-    if iszero(j) return buildleaf(θ, s, u, -stepsize(ϕ)) end
-    s⁻, s⁺, s₁, n₁, t₁, d₁, ll₁ = buildleft(ϕ, θ, s, u, j-1)
-    if d₁ return s⁻, s⁺, s₁, n₁, t₁, true, Inf end
-    s⁻, _, s₂, n₂, t₂, d₂, ll₂ = buildleft(ϕ, θ, s⁻, u, j-1)
+    if iszero(j) return buildleaf(ϕ, θ, s, u, -stepsize(ϕ)) end
+    s⁻, s⁺, s₁, n₁, t₁, d₁ = buildleft(ϕ, θ, s, u, j-1)
+    if d₁ return s⁻, s⁺, s₁, n₁, t₁, true end
+    s⁻, _, s₂, n₂, t₂, d₂ = buildleft(ϕ, θ, s⁻, u, j-1)
     n = n₂ / (n₁ + n₂) > rand()
     return s⁻, s⁺, n ? s₁ : s₂, n₁ + n₂, t₁ || t₂ || uturn(s⁻, s⁺), d₂
 end
@@ -47,7 +47,7 @@ end
 function buildright(ϕ::NUTS, θ, s, u, j)
     if iszero(j) return buildleaf(ϕ, θ, s, u, stepsize(ϕ)) end
     s⁻, s⁺, s₁, n₁, t₁, d₁ = buildright(ϕ, θ, s, u, j-1)
-    if d₁ return s⁻, s⁺, s₁, n₁, t₁, true, Inf end
+    if d₁ return s⁻, s⁺, s₁, n₁, t₁, true end
     _, s⁺, s₂, n₂, t₂, d₂ = buildright(ϕ, θ, s⁻, u, j-1)
     n = n₂ / (n₁ + n₂) > rand()
     return s⁻, s⁺, n ? s₁ : s₂, n₁ + n₂, t₁ || t₂ || uturn(s⁻, s⁺), d₂
