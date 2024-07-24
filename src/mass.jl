@@ -10,6 +10,8 @@ struct DiagMass <: Mass
     value::Diagonal{Float64}
 end
 
+DiagMass(x::Vector{T}) where T = x |> Diagonal |> DiagMass
+
 struct DenseMass <: Mass
     value::LowerTriangular{Float64}
 end
