@@ -13,7 +13,7 @@ function uturn(s⁻, s⁺)
     return δq⋅p(s⁻) < 0 || δq⋅p(s⁺) < 0
 end
 
-function StatsBase.sample(ϕ::NUTS, θ, q₀, verbose = false)
+function StatsBase.sample(ϕ::NUTS, θ, q₀; verbose = false)
     s₀ = State(θ, q₀)
     u = log(rand()) - energy(θ, s₀)
     s⁻, s⁺, s₁, j, n, t, d = s₀, s₀, s₀, 0, 1, false, false

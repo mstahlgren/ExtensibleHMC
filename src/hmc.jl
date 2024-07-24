@@ -5,7 +5,7 @@ struct HMC <: Sampler
     L::Int
 end
 
-function StatsBase.sample(ϕ::HMC, θ::Hamiltonian, q₀::AbstractVecOrMat)
+function StatsBase.sample(ϕ::HMC, θ, q₀)
     s₀ = State(θ, q₀)
     for _ in 1:ϕ.L s₁ = leapfrog(θ, s₁, stepsize(ϕ)) end
     E₁ = energy(θ, s₁)
