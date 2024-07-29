@@ -2,7 +2,7 @@ import LinearAlgebra: ⋅
 
 export NUTS
 
-# CONSIDER: Max tree depth
+# Original No U-turn sampler using slice sampling.
 
 struct NUTS <: Sampler
     ϵ::Float64
@@ -32,7 +32,7 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀; verbose = false)
         n += n′
         j += 1
     end
-    return Sample(q(s₁), s₁.ll, j, q₀ != q(s₁), d)
+    return Sample(q(s₁), s₁.ll, 2^j, q₀ != q(s₁), d)
 end
 
 function buildleft(ϕ::NUTS, θ, s, u, j)

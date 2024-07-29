@@ -6,6 +6,7 @@ include("hamiltonian.jl")
 include("sample.jl")
 include("hmc.jl")
 include("nuts.jl")
+include("mnuts.jl")
 include("diagnostics.jl")
 
 end # module ExtensibleHMC

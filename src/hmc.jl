@@ -1,5 +1,7 @@
 export HMC
 
+# Plain Hybrid Monte Carlo sampler using a fixed steps and metropolis endpoint sampling.
+
 struct HMC <: Sampler
     ϵ::Float64
     L::Int
