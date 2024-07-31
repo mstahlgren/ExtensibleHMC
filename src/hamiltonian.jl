@@ -1,4 +1,4 @@
-import LinearAlgebra: ⋅
+import LinearAlgebra: dot
 import Zygote: withgradient
 
 export Hamiltonian, ∇, mass
@@ -10,10 +10,10 @@ end
 
 (H::Hamiltonian)(s) = withgradient(H.density, s)
 
-energy(H::Hamiltonian, s) = kinetic(H, s) + potential(H, s)
+kinetic(H::Hamiltonian, p) = 0.5 * dot(p, H.mass\p)
 
-kinetic(H::Hamiltonian, s) = 0.5 * p(s)⋅(H.mass\p(s))
+v(H::Hamiltonian, s::State) = H.mass\p(s)
 
-potential(::Hamiltonian, s) = -ll(s)
+v(H::Hamiltonian, p) = H.mass\p
 
 mass(H::Hamiltonian) = H.mass
