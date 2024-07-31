@@ -4,8 +4,6 @@ export Sample, sample
 
 abstract type Sampler end
 
-stepsize(x::Sampler) = x.ϵ
-
 struct Sample{T <: AbstractVecOrMat}
     value::T
     ll::Float64
@@ -14,17 +12,19 @@ struct Sample{T <: AbstractVecOrMat}
     diverged::Bool
 end
 
-function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::T, n::Int; verbose = false) where T <: AbstractVecOrMat
-    samples = Vector{Sample{T}}(undef, n)
+function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::AbstractVecOrMat, n::Int; verbose = false)
+    samples = Vector{Sample{typeof(q)}}(undef, n)
     for i in 1:n
         if verbose println("Sample ", i) end
-        s = sample(ϕ, θ, q; verbose = verbose)
+        s = sample(ϕ, θ, q)
         samples[i] = s
         q = s.value
         if verbose 
             print("Completed :: LL ", round(s.ll, digits = 4))
-            print(" :: ", s.accepted ? "Accepted" : "Rejected")
-            println(s.diverged ? " :: Diverged" : "") 
+            print(" :: in $s.nsteps steps")
+            if !s.accepted print(" :: Rejected") end
+            if s.diverged print(" :: Diverged") end
+            println("")
         end
     end
     return samples

@@ -10,7 +10,7 @@ struct MNUTS <: Sampler
     max_ΔE::Float64
 end
 
-MNUTS(ϵ) = MNUTS(ϵ, 14, 1000)
+MNUTS(ϵ) = MNUTS(ϵ, 12, 1000)
 
 struct BinaryTree{T}
     left::State{T}
@@ -21,9 +21,9 @@ struct BinaryTree{T}
     steps::Int
 end
 
-function BinaryTree(θ::Hamiltonian, q₀)
-    s = State(θ, q₀)
-    BinaryTree(s, copy(s), copy(s), copy(p(s)), energy(θ, s), 1)
+function BinaryTree(θ, q)
+    s = State(θ, q)
+    BinaryTree(s, copy(s), s, p(s), energy(s), 1)
 end
 
 function BinaryTree(prop::State, l::BinaryTree, r::BinaryTree, esum = logaddexp(l.esum, r.esum))
@@ -48,10 +48,9 @@ function uturn(θ::Hamiltonian, t::T, l::T, r::T) where T <: BinaryTree
     return outer || left || right
 end
 
-function StatsBase.sample(ϕ::MNUTS, θ, q₀; verbose = false)
-    tree, tree′, j, turned, div = BinaryTree(θ, q₀), BinaryTree(θ, q₀), 0, false, false
+function StatsBase.sample(ϕ::MNUTS, θ::Hamiltonian, q₀)
+    tree, j, turned, div = BinaryTree(θ, q₀), 0, false, false
     while j < ϕ.max_depth && !turned && !div
-        if verbose println("Doubling $j") end
         v = rand((-1, 1))
         if isone(v)
             tree′, turned, div = buildtree(ϕ, θ, tree.right, 1, j)
@@ -60,7 +59,7 @@ function StatsBase.sample(ϕ::MNUTS, θ, q₀; verbose = false)
             tree′, turned, div = buildtree(ϕ, θ, tree.left, -1, j)
             ltree, rtree = tree′, tree
         end
-        accepted = !div && !turned && mh(energy(θ, tree.prop), energy(θ, tree′.prop))
+        accepted = !div && !turned && mh(energy(tree.prop), energy(tree′.prop))
         tree = BinaryTree(accepted ? tree′.prop : tree.prop, ltree, rtree)
         turned = turned || uturn(θ, tree, ltree, rtree)
         j = j + 1
@@ -69,7 +68,7 @@ function StatsBase.sample(ϕ::MNUTS, θ, q₀; verbose = false)
 end
 
 function buildtree(ϕ::MNUTS, θ, s, v, j)
-    if iszero(j) return buildleaf(ϕ, θ, s, v * stepsize(ϕ)) end
+    if iszero(j) return buildleaf(ϕ, θ, s, v * ϕ.ϵ) end
     tree₁, uturn₁, div₁ = buildtree(ϕ, θ, s, v, j - 1)
     if uturn₁ || div₁ return tree₁, uturn₁, div₁ end
     if isone(v)
@@ -85,8 +84,7 @@ end
 
 function buildleaf(ϕ::MNUTS, θ, s, ϵ)
     s′ = leapfrog(θ, s, ϵ)
-    E′ = energy(θ, s′)
-    d = E′ - energy(θ, s) > ϕ.max_ΔE
-    t = BinaryTree(s′, s′, s′, p(s′), E′, 1)
-    return t, false, d
+    E′ = energy(s′)
+    d = E′ - energy(s) > ϕ.max_ΔE
+    return BinaryTree(s′, s′, s′, p(s′), E′, 1), false, d
 end
