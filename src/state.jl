@@ -3,11 +3,16 @@ struct State{T <: AbstractVecOrMat}
     momentum::T
     gradient::T
     ll::Float64
+    ke::Float64
 end
 
-State(θ, q₀) = begin ll, Δll = θ(q₀); State(q₀, mass(θ) * randn(q₀ |> size), Δll[1], ll) end
+function State(θ, q₀)
+    ll, Δll = θ(q₀)
+    p = mass(θ) * randn(q₀ |> size)
+    return State(copy(q₀), p, Δll[1], ll, kinetic(θ, p))
+end
 
-Base.copy(s::State) = State(q(s) |> copy, p(s) |> copy, a(s) |> copy, s.ll)
+Base.copy(s::State) = State(copy(q(s)), copy(p(s)), copy(a(s)), s.ll, s.ke)
 
 q(s::State) = s.position
 
@@ -17,14 +22,13 @@ a(s::State) = s.gradient
 
 ll(s::State) = s.ll
 
-v(θ, s::State) = mass(θ)\s.momentum 
+energy(s::State) = s.ke - s.ll
 
 function leapfrog(θ, s₀, ϵ)
-    s₁ = copy(s₀)
-    p(s₁) .+= 0.5 * ϵ * a(s₁)
-    q(s₁) .+= ϵ * v(θ, s₁)
-    ll, Δll = θ(q(s₁))
-    a(s₁) .= Δll[1]
-    p(s₁) .+= 0.5 * ϵ * a(s₁)
-    return State(q(s₁), p(s₁), a(s₁), ll)
+    p₁ = p(s₀) .+ 0.5 .* ϵ .* a(s₀)
+    q₁ = q(s₀) .+ ϵ .* v(θ, p₁)
+    ll, Δll = θ(q₁)
+    a₁ = Δll[1]
+    p₁ .+= 0.5 .* ϵ .* a₁
+    return State(q₁, p₁, a₁, ll, kinetic(θ, p₁))
 end
