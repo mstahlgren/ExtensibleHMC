@@ -10,7 +10,7 @@ struct NUTS <: Sampler
     max_ΔE::Float64
 end
 
-NUTS(ϵ) = NUTS(ϵ, 10, 1000)
+NUTS(ϵ) = NUTS(ϵ, 12, 1000)
 
 function uturn(s⁻, s⁺)
     δq = q(s⁺) - q(s⁻)
@@ -19,7 +19,7 @@ end
 
 function StatsBase.sample(ϕ::NUTS, θ, q₀; verbose = false)
     s₀ = State(θ, q₀)
-    u = log(rand()) - energy(θ, s₀)
+    u = log(rand()) - energy(s₀)
     s⁻, s⁺, s₁, j, n, t, d = s₀, s₀, s₀, 0, 1, false, false
     while j < ϕ.max_depth
         if verbose print("New branch :: j ", j) end
@@ -32,11 +32,11 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀; verbose = false)
         n += n′
         j += 1
     end
-    return Sample(q(s₁), s₁.ll, 2^j, q₀ != q(s₁), d)
+    return Sample(q(s₁), s₁.ll, 2^j, q₀ != q(s₁), d, j == ϕ.max_depth)
 end
 
 function buildleft(ϕ::NUTS, θ, s, u, j)
-    if iszero(j) return buildleaf(ϕ, θ, s, u, -stepsize(ϕ)) end
+    if iszero(j) return buildleaf(ϕ, θ, s, u, -ϕ.ϵ) end
     s⁻, s⁺, s₁, n₁, t₁, d₁ = buildleft(ϕ, θ, s, u, j-1)
     if d₁ return s⁻, s⁺, s₁, n₁, t₁, true end
     s⁻, _, s₂, n₂, t₂, d₂ = buildleft(ϕ, θ, s⁻, u, j-1)
@@ -45,7 +45,7 @@ function buildleft(ϕ::NUTS, θ, s, u, j)
 end
 
 function buildright(ϕ::NUTS, θ, s, u, j)
-    if iszero(j) return buildleaf(ϕ, θ, s, u, stepsize(ϕ)) end
+    if iszero(j) return buildleaf(ϕ, θ, s, u, ϕ.ϵ) end
     s⁻, s⁺, s₁, n₁, t₁, d₁ = buildright(ϕ, θ, s, u, j-1)
     if d₁ return s⁻, s⁺, s₁, n₁, t₁, true end
     _, s⁺, s₂, n₂, t₂, d₂ = buildright(ϕ, θ, s⁻, u, j-1)
@@ -55,7 +55,7 @@ end
 
 function buildleaf(ϕ::NUTS, θ, s, u, ϵ)
     s′ = leapfrog(θ, s, ϵ)
-    E = energy(θ, s′)
+    E = energy(s′)
     n = Int(-E >= u)
     d = -E < u - ϕ.max_ΔE
     return s′, s′, s′, n, false, d
