@@ -8,8 +8,10 @@ struct Sample{T <: AbstractVecOrMat}
     value::T
     ll::Float64
     nsteps::Int
+    pratio::Float64
     accepted::Bool
     diverged::Bool
+    maxdepth::Bool
 end
 
 function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::AbstractVecOrMat, n::Int; verbose = false)

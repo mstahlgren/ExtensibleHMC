@@ -12,8 +12,6 @@ function State(θ, q₀)
     return State(copy(q₀), p, Δll[1], ll, kinetic(θ, p))
 end
 
-Base.copy(s::State) = State(copy(q(s)), copy(p(s)), copy(a(s)), s.ll, s.ke)
-
 q(s::State) = s.position
 
 p(s::State) = s.momentum
