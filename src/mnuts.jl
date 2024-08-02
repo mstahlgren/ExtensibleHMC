@@ -1,4 +1,5 @@
 import LinearAlgebra: ⋅
+import LogExpFunctions: logaddexp
 
 export MNUTS
 
@@ -23,7 +24,7 @@ end
 
 function BinaryTree(θ, q)
     s = State(θ, q)
-    BinaryTree(s, copy(s), s, p(s), energy(s), 1)
+    BinaryTree(s, s, s, p(s), energy(s), 1)
 end
 
 function BinaryTree(prop::State, l::BinaryTree, r::BinaryTree, esum = logaddexp(l.esum, r.esum))
@@ -36,8 +37,6 @@ function BinaryTree(l::BinaryTree, r::BinaryTree)
 end
 
 mh(a, p) = rand() < exp(p - a)
-
-logaddexp(args...) = log(sum(exp.(args)))
 
 uturn(msum, vₗ, vᵣ) = vₗ ⋅ msum < 0 || vᵣ ⋅ msum < 0
 
@@ -62,9 +61,9 @@ function StatsBase.sample(ϕ::MNUTS, θ::Hamiltonian, q₀)
         accepted = !div && !turned && mh(energy(tree.prop), energy(tree′.prop))
         tree = BinaryTree(accepted ? tree′.prop : tree.prop, ltree, rtree)
         turned = turned || uturn(θ, tree, ltree, rtree)
-        j = j + 1
+        if !div && !turned j = j + 1 end
     end
-    return Sample(q(tree.prop), ll(tree.prop), tree.steps, q₀ != q(tree.prop), div)
+    return Sample(q(tree.prop), ll(tree.prop), tree.steps, q₀ != q(tree.prop), div, j == ϕ.max_depth)
 end
 
 function buildtree(ϕ::MNUTS, θ, s, v, j)
