@@ -11,7 +11,7 @@ struct MNUTS <: Sampler
     max_ΔE::Float64
 end
 
-MNUTS(ϵ) = MNUTS(ϵ, 12, 1000)
+MNUTS(ϵ) = MNUTS(ϵ, 10, 1000)
 
 struct BinaryTree{T}
     left::State{T}
@@ -64,7 +64,7 @@ function StatsBase.sample(ϕ::MNUTS, θ::Hamiltonian, q₀)
         turned = turned || uturn(θ, tree, ltree, rtree)
         if div || turned break end
     end
-    return Sample(q(tree.prop), ll(tree.prop), tree.steps, tree.psum / tree.steps, true, div, !div && !turned)
+    return Sample(q(tree.prop), ll(tree.prop), tree.steps, tree.psum / tree.steps, div, !div && !turned)
 end
 
 function buildtree(ϕ::MNUTS, θ, s, v, j, E₀)
