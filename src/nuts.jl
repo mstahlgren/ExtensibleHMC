@@ -4,6 +4,8 @@ export NUTS
 
 # Original No U-turn sampler using slice sampling.
 
+# NOTE: This Sampler currently does not return a proper acceptrate
+
 struct NUTS <: Sampler
     ϵ::Float64
     max_depth::Int
@@ -32,7 +34,7 @@ function StatsBase.sample(ϕ::NUTS, θ, q₀; verbose = false)
         n += n′
         j += 1
     end
-    return Sample(q(s₁), s₁.ll, 2^j, 0.0, q₀ != q(s₁), d, j == ϕ.max_depth)
+    return Sample(q(s₁), s₁.ll, 2^j, 0.0, d, j == ϕ.max_depth)
 end
 
 function buildleft(ϕ::NUTS, θ, s, u, j)
