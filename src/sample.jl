@@ -8,8 +8,7 @@ struct Sample{T <: AbstractVecOrMat}
     value::T
     ll::Float64
     nsteps::Int
-    pratio::Float64
-    accepted::Bool
+    acceptrate::Float64
     diverged::Bool
     maxdepth::Bool
 end
