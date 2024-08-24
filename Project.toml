@@ -1,10 +1,11 @@
 name = "ExtensibleHMC"
 uuid = "abc9d2d2-04d7-4b9f-b395-0339a31a96f1"
 authors = ["Martin Ståhlgren <martin.stahlgren@gmail.com>"]
-version = "0.3.2"
+version = "0.4.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+LogExpFunctions = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
