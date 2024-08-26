@@ -19,6 +19,7 @@ function Base.summary(S::Vector{Sample{T}}) where T
     rnd = x -> round(x; digits = 3)
     println("Number of free variables: ", length(S[1].value))
     println("Number of samples: ", length(S))
+    println("Effective sample size: ", rnd(effectivesize(S)))
     println("Autocorrelation τ¹⁻³: ", rnd.([mean(s) for s in eachrow(autocor(S)[2:4])]))
     println("Acceptance rate: ", rnd(acceptrate(S)))
     println("Divergance rate: ", rnd(ndivergences(S) / length(S)))

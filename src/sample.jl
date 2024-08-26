@@ -31,3 +31,4 @@ function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::AbstractVecOrMat, n::
     return samples
 end
 
+Base.show(io::IO, x::Vector{Sample{T}}) = summary(x)
