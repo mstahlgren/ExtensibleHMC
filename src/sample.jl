@@ -13,6 +13,8 @@ struct Sample{T <: AbstractVecOrMat}
     maxdepth::Bool
 end
 
+const Samples{T} = Vector{Sample{T}}
+
 function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::AbstractVecOrMat, n::Int; verbose = false)
     samples = Vector{Sample{typeof(q)}}(undef, n)
     for i in 1:n
@@ -31,4 +33,4 @@ function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::AbstractVecOrMat, n::
     return samples
 end
 
-Base.show(io::IO, x::Vector{Sample{T}}) where T = summary(x)
+Base.show(io::IO, ::MIME"text/plain", x::Samples) = summary(x)
