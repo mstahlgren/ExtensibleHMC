@@ -6,6 +6,9 @@ export plot, scatter, density
 
 StatsBase.autocor(x::Samples) = autocor(reduce(hcat, [s.value for s in x])')
 
+StatsBase.autocor(x::Samples{Matrix{T}}) where T <: AbstractFloat = 
+    autocor(reduce(hcat, [vec(s.value) for s in x])')
+
 effectivesize(x::Samples) = mean(length(x) ./ (2 .* [sum(a) for a in eachcol(autocor(x))] .- 1))
 
 acceptrate(x) = sum(s.acceptrate * s.nsteps for s in x) / sum(s.nsteps for s in x)
