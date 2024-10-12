@@ -1,4 +1,4 @@
-import LinearAlgebra: I, Diagonal, LowerTriangular, Cholesky
+import LinearAlgebra: I, Diagonal, LowerTriangular, cholesky
 
 export UnitMass, DiagMass, DenseMass
 
@@ -12,9 +12,9 @@ end
 
 DiagMass(x::Vector{T}) where T = x |> Diagonal |> DiagMass
 
-struct DenseMass <: Mass
+#= struct DenseMass <: Mass
     value::LowerTriangular{Float64}
-end
+end =#
 
 Base.:*(::UnitMass, x) = x
 
@@ -24,6 +24,6 @@ Base.:*(m::DenseMass, x) = m.value * x
 
 Base.:\(::UnitMass, x) = x
 
-Base.:\(m::DiagMass, x) = (m.value.^2)\x
+Base.:\(m::DiagMass, x) = m.value\x
 
-Base.:\(m::DenseMass, x) = Cholesky(m.value)\x
+#Base.:\(m::DenseMass, x) = Cholesky(m.value)\x
