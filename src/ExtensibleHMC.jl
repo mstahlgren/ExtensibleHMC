@@ -13,6 +13,7 @@ include("sample.jl")
 include("hmc.jl")
 include("nuts.jl")
 include("mnuts.jl")
+include("welford.jl")
 include("adapt.jl")
 include("diagnostics.jl")
 
