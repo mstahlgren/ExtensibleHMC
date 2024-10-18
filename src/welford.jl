@@ -14,7 +14,7 @@ Statistics.mean(w::Welford) = w.mean
 
 Statistics.var(w::Welford) = w.M2 / (w.n - 1)
 
-function update!(w::Welford, samples::Vector{Samples{T}}) where T <: AbstractVecOrMat
+function update!(w::Welford, samples::Samples{T}) where T <: AbstractVecOrMat
     for s in samples w = update!(w, s.value) end
     return w
 end
