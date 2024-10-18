@@ -1,4 +1,4 @@
-import Statistics: Statistics
+import Statistics: Statistics, var
 
 export Welford, update!, var, colsum
 
