@@ -22,7 +22,7 @@ function Base.summary(S::Samples)
     println("Number of samples: ", length(S))
     println("Effective sample size: ", rnd(effectivesize(S)))
     println("Acceptance rate: ", rnd(acceptrate(S)))
-    println("Divergance rate: ", rnd(ndivergences(S) / length(S)))
+    println("Divergence rate: ", rnd(ndivergences(S) / length(S)))
     println("Number of steps: ", rnd.(quantile([s.nsteps for s in S], qs)))
     println("Autocorrelation τ¹⁻³: ", rnd.([mean(s) for s in eachrow(autocor(S)[2:4])]))
     println("Posterior ll: ", rnd.(quantile([s.ll for s in S], qs)))
@@ -36,7 +36,7 @@ end
 
 # QQ scatter plot
 function Plots.scatter(samples::Samples, id₁, id₂)
-    q = reduce(hcat, [s.value[[id₁, id₂]] for s in samples])
+    q = reduce(hcat, [s.value[[id₁, id₂]] for s in samples])'
     scatter(view(q,:,1), view(q,:,2), xlim = (-3,3), ylim = (-3,3), aspect_ratio = :equal)
 end
 
