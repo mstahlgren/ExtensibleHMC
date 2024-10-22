@@ -3,7 +3,7 @@ using Test
 
 n = 2
 
-hu = Hamiltonian(x->-x'x, UnitMass())
+hu = Hamiltonian(x->-x'x, UnitMass(n))
 hd = Hamiltonian(x->-x'x, DiagMass(ones(n)))
 
 s_hmc = sample(HMC(0.05, 10), hu, zeros(n), n)
