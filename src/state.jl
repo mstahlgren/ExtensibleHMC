@@ -7,8 +7,7 @@ struct State{T <: AbstractVecOrMat}
 end
 
 function State(θ, q₀)
-    ll, Δll = θ(q₀)
-    p = mass(θ) * randn(q₀ |> size)
+    p, ll, Δll  = refresh(θ), θ(q₀)...
     return State(copy(q₀), p, Δll[1], ll, kinetic(θ, p))
 end
 

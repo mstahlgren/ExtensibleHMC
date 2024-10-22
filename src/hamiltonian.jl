@@ -10,10 +10,8 @@ end
 
 (H::Hamiltonian)(s) = withgradient(H.density, s)
 
-kinetic(H::Hamiltonian, p) = 0.5 * dot(p, H.mass\p)
-
-v(H::Hamiltonian, s::State) = H.mass\p(s)
-
 v(H::Hamiltonian, p) = H.mass\p
 
-mass(H::Hamiltonian) = H.mass
+kinetic(H::Hamiltonian, p) = 0.5 * dot(p, v(H, p))
+
+refresh(H::Hamiltonian) = H.mass * randn(length(H.mass))

@@ -41,9 +41,9 @@ mh(a, p) = rand() < exp(p - a)
 uturn(msum, vₗ, vᵣ) = vₗ ⋅ msum < 0 || vᵣ ⋅ msum < 0
 
 function uturn(θ::Hamiltonian, t::T, l::T, r::T) where T <: BinaryTree
-    outer = uturn(t.msum, v(θ, t.left), v(θ, t.right))
-    left  = uturn(l.msum .+ p(r.left), v(θ, l.left), v(θ, r.left))
-    right = uturn(r.msum .+ p(l.right), v(θ, l.right), v(θ, r.right))
+    outer = uturn(t.msum, v(θ, p(t.left)), v(θ, p(t.right)))
+    left  = uturn(l.msum .+ p(r.left), v(θ, p(l.left)), v(θ, p(r.left)))
+    right = uturn(r.msum .+ p(l.right), v(θ, p(l.right)), v(θ, p(r.right)))
     return outer || left || right
 end
 
