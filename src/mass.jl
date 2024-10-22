@@ -3,26 +3,24 @@ import LinearAlgebra: Diagonal
 export UnitMass, DiagMass
 
 
-abstract type Mass{T, N} end
+abstract type Mass{T} end
 
-Base.eltype(::Mass{T,N}) where {T,N} = T
-
-Base.length(::Mass{T,N}) where {T,N} = N
+Base.eltype(::Mass{T}) where T = T
 
 
-struct UnitMass{T, N} <: Mass{T, N} end
+struct UnitMass{T} <: Mass{T} end
 
-UnitMass(N::Int, T = Float64) = UnitMass{T, N}()
+UnitMass(T = Float64) = UnitMass{T}()
 
 
-struct DiagMass{T, N, M} <: Mass{T, N}
+struct DiagMass{T, M} <: Mass{T}
     sqrmass::M
     invmass::M
 end
 
 function DiagMass(v)
     sqrmass, invmass = Diagonal(v .|> sqrt .|> inv), Diagonal(v)
-    DiagMass{eltype(v), length(v), typeof(sqrmass)}(sqrmass, invmass)
+    DiagMass{eltype(v), typeof(sqrmass)}(sqrmass, invmass)
 end
 
 
