@@ -1,33 +1,29 @@
-import LinearAlgebra: Diagonal
+import LinearAlgebra: Hermitian, Diagonal, LowerTriangular, UpperTriangular, cholesky
 
-export UnitMass, DiagMass
-
+export UnitMass, DenseMass
 
 abstract type Mass{T} end
 
-Base.eltype(::Mass{T}) where T = T
-
-
 struct UnitMass{T} <: Mass{T} end
+
+struct DenseMass{T, S, M} <: Mass{T}
+    McL::S
+    M⁻¹::M
+end
 
 UnitMass(T = Float64) = UnitMass{T}()
 
-
-struct DiagMass{T, M} <: Mass{T}
-    sqrmass::M
-    invmass::M
+function DenseMass(cov)
+    c = cholesky(Hermitian(cholesky(cov) |> inv)).L
+    DenseMass{eltype(cov), typeof(c), typeof(cov)}(c, cov)
 end
 
-function DiagMass(v)
-    sqrmass, invmass = Diagonal(v .|> sqrt .|> inv), Diagonal(v)
-    DiagMass{eltype(v), typeof(sqrmass)}(sqrmass, invmass)
-end
+Base.eltype(::Mass{T}) where T = T
 
+Base.:*(m::Mass, x) = m.McL * x
 
 Base.:*(::UnitMass, x) = x
 
-Base.:*(m::DiagMass, x) = m.sqrmass * x
+Base.:\(m::Mass, x) = m.M⁻¹ * x
 
 Base.:\(::UnitMass, x) = x
-
-Base.:\(m::DiagMass, x) = m.invmass * x
