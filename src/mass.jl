@@ -1,6 +1,6 @@
-import LinearAlgebra: Hermitian, Diagonal, LowerTriangular, UpperTriangular, cholesky
+import LinearAlgebra: Hermitian, Diagonal, cholesky
 
-export UnitMass, DiagMass, DenseMass
+export UnitMass, DenseMass
 
 abstract type Mass{T} end
 
