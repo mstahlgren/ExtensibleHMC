@@ -5,7 +5,7 @@ export Hamiltonian, ∇, mass
 
 struct Hamiltonian{P, M <: Mass}
     density::P # Unnormalized log likelihood
-    mass::M # LLᵀ decomposition
+    mass::M
 end
 
 (H::Hamiltonian)(s) = withgradient(H.density, s)
