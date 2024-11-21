@@ -1,7 +1,3 @@
-import LinearAlgebra: ⋅
-
-export NUTS
-
 # Original No U-turn sampler using slice sampling.
 
 # NOTE: This Sampler currently does not return a proper acceptrate

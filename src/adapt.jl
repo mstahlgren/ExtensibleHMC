@@ -1,5 +1,3 @@
-export init_ϵ, tune_ϵ_step, tune_ϵ_dual
-
 init_ϵ(H::Hamiltonian, q, ϵ = 0.1) = init_ϵ(H, State(H, q), ϵ)
 
 function init_ϵ(H::Hamiltonian, s::State, ϵ = 0.1)

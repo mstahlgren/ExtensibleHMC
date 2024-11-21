@@ -1,7 +1,3 @@
-import LinearAlgebra: Hermitian, Diagonal, cholesky
-
-export UnitMass, DenseMass
-
 abstract type Mass{T} end
 
 struct UnitMass{T} <: Mass{T} end

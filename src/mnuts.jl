@@ -1,8 +1,3 @@
-import LinearAlgebra: ⋅
-import LogExpFunctions: logaddexp
-
-export MNUTS
-
 # Multinominal No U-Turn Sampler with robust generalized U-turn criteria.
 
 struct MNUTS <: Sampler

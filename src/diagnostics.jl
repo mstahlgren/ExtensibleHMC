@@ -1,8 +1,3 @@
-import StatsBase: mean, quantile, Histogram, fit, autocor
-import RecipesBase: @recipe
-
-export samples, summary, acceptrate, miness
-
 samples(x::Samples, f = identity) = [f(s.value) for s in x]
 
 StatsBase.autocor(x::Samples) = autocor(reduce(hcat, samples(x, vec))')

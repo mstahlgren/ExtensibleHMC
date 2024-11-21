@@ -1,8 +1,3 @@
-import LinearAlgebra: dot
-import Zygote: withgradient
-
-export Hamiltonian, ∇, mass
-
 struct Hamiltonian{P, M <: Mass}
     density::P # Unnormalized log likelihood
     mass::M

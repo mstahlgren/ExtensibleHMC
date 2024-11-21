@@ -1,7 +1,3 @@
-import StatsBase: StatsBase, sample
-
-export Sample, sample
-
 abstract type Sampler end
 
 struct Sample{T <: AbstractVecOrMat}
