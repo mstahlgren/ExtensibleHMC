@@ -1,8 +1,7 @@
 import StatsBase: mean, quantile, Histogram, fit, autocor
-import Plots: Plots, plot, scatter
+import RecipesBase: @recipe
 
 export samples, summary, acceptrate, miness
-export plot, scatter, density
 
 samples(x::Samples, f = identity) = [f(s.value) for s in x]
 
@@ -31,21 +30,15 @@ function Base.summary(S::Samples)
 end
 
 # QT plot
-function Plots.plot(S::Samples, idx...)
-    samples(S, x->x[idx...]) |> plot
+@recipe function plot(S::Samples, idx)
+    label := nothing
+    return samples(S, x->x[idx])
 end
 
 # QQ scatter plot
-function Plots.scatter(S::Samples, id₁, id₂; kwargs...)
-    q = reduce(hcat, samples(S, x->x[id₁, id₂]))'
-    scatter(view(q,:,1), view(q,:,2), kwargs...; alpha = 100/length(S))
-end
-
-function density(samples::Samples, idx)
-    S = samples(S, x->x[id₁])
-    low = minimum(S)
-    high = maximum(S)
-    bins = low:(high-low)/32:high
-    hist = fit(Histogram, S, bins)
-    plot(hist, legend = false)
+@recipe function scatter(S::Samples, id₁, id₂)
+    q = reduce(hcat, samples(S, x->x[[id₁, id₂]]))'
+    label := nothing
+    alpha := 100/length(S)
+    view(q,:,id₁), view(q,:,id₂)
 end
