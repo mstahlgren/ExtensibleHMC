@@ -2,7 +2,6 @@ module ExtensibleHMC
 
 import LinearAlgebra: Hermitian, Diagonal, cholesky, dot, ⋅
 import StatsBase: StatsBase, mean, quantile, autocor, sample
-import Zygote: withgradient
 import LogExpFunctions: logaddexp
 import RecipesBase: @recipe
 

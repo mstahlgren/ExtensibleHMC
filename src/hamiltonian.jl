@@ -1,9 +1,9 @@
 struct Hamiltonian{P, M <: Mass}
-    density::P # Unnormalized log likelihood
+    density::P # Unnormalized log likelihood, gradient
     mass::M
 end
 
-(H::Hamiltonian)(s) = withgradient(H.density, s)
+(H::Hamiltonian)(s) = H.density(s)
 
 v(H::Hamiltonian, p) = H.mass\p
 
