@@ -35,7 +35,7 @@ include("adapt.jl")
 export init_ϵ, tune_ϵ_step, tune_ϵ_dual
 
 include("diagnostics.jl")
-export samples, summary, acceptrate, miness
+export samples, summary, acceptrate, ess
 
 include("welford.jl")
 
