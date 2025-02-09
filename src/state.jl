@@ -30,11 +30,6 @@ function leapfrog(θ, s₀, ϵ)
     return State(q₁, p₁, a₁, ll, kinetic(θ, p₁))
 end
 
-function leapdiff(θ, s₀, ϵ)
-    s₁ = leapfrog(θ, s₀, ϵ)
-    return s₁, energy(s₁) - energy(s₀)
-end
-
 function Base.show(io::IO, s::State)
     print("State(")
     print("U: ", round(-s.ll, digits = 3), " ")

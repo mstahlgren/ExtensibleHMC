@@ -1,3 +1,8 @@
+function leapdiff(θ, s₀, ϵ)
+    s₁ = leapfrog(θ, s₀, ϵ)
+    return s₁, energy(s₁) - energy(s₀)
+end
+
 init_ϵ(H::Hamiltonian, q, ϵ = 0.1) = init_ϵ(H, State(H, q), ϵ)
 
 function init_ϵ(H::Hamiltonian, s::State, ϵ = 0.1)
