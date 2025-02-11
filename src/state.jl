@@ -8,7 +8,7 @@ end
 
 function State(θ, q₀)
     p, ll, Δll  = refresh(θ, q₀), θ(q₀)...
-    return State(copy(q₀), p, Δll[1], ll, kinetic(θ, p))
+    return State(copy(q₀), p, Δll, ll, kinetic(θ, p))
 end
 
 q(s::State) = s.position
@@ -24,8 +24,7 @@ energy(s::State) = s.ke - s.ll
 function leapfrog(θ, s₀, ϵ)
     p₁ = p(s₀) .+ 0.5 .* ϵ .* a(s₀)
     q₁ = q(s₀) .+ ϵ .* v(θ, p₁)
-    ll, Δll = θ(q₁, a(s₀))
-    a₁ = Δll[1]
+    ll, a₁ = θ(q₁, a(s₀))
     p₁ .+= 0.5 .* ϵ .* a₁
     return State(q₁, p₁, a₁, ll, kinetic(θ, p₁))
 end
