@@ -19,6 +19,8 @@ a(s::State) = s.gradient
 
 ll(s::State) = s.ll
 
+ke(s::State) = s.ke
+
 energy(s::State) = s.ke - s.ll
 
 function leapfrog(θ, s₀, ϵ)

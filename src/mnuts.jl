@@ -19,7 +19,7 @@ struct BinaryTree{T}
 end
 
 function BinaryTree(s)
-    BinaryTree(s, s, s, p(s), 0.0, 0.0, 0)
+    BinaryTree(State(q(s), p(s), a(s) |> copy, ll(s), ke(s)), s, s, p(s), 0.0, 0.0, 0)
 end
 
 function BinaryTree(prop::State, l::BinaryTree, r::BinaryTree, esum = logaddexp(l.esum, r.esum))
