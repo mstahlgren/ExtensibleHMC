@@ -24,7 +24,7 @@ energy(s::State) = s.ke - s.ll
 function leapfrog(θ, s₀, ϵ)
     p₁ = p(s₀) .+ 0.5 .* ϵ .* a(s₀)
     q₁ = q(s₀) .+ ϵ .* v(θ, p₁)
-    ll, Δll = θ(q₁)
+    ll, Δll = θ(q₁, a(s₀))
     a₁ = Δll[1]
     p₁ .+= 0.5 .* ϵ .* a₁
     return State(q₁, p₁, a₁, ll, kinetic(θ, p₁))

@@ -3,7 +3,7 @@ struct Hamiltonian{P, M <: Mass}
     mass::M
 end
 
-(H::Hamiltonian)(s) = H.density(s)
+(H::Hamiltonian)(q, a = similar(q)) = H.density(q, a)
 
 v(H::Hamiltonian, p) = H.mass\p
 
