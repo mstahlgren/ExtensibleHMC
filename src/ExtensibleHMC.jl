@@ -13,7 +13,7 @@ rosenbrock(x) = rosenbrock(x[1], x[2], 1, 100)
 
 include("state.jl")
 
-include("mass.jl")
+include("mass/Mass.jl")
 export Mass, UnitMass, DenseMass
 
 include("hamiltonian.jl")
