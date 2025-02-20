@@ -9,4 +9,4 @@ v(H::Hamiltonian, p) = H.mass\p
 
 kinetic(H::Hamiltonian, p) = 0.5 * dot(p, v(H, p))
 
-refresh(H::Hamiltonian, p) = H.mass * randn(eltype(H.mass), size(p)...)
+refresh(H::Hamiltonian) = randn(H.mass)
