@@ -7,7 +7,7 @@ struct State{T <: AbstractVecOrMat}
 end
 
 function State(θ, q₀)
-    p, ll, Δll  = refresh(θ, q₀), θ(q₀)...
+    p, ll, Δll  = refresh(θ), θ(q₀)...
     return State(copy(q₀), p, Δll, ll, kinetic(θ, p))
 end
 
