@@ -6,7 +6,11 @@ struct DenseMass{S, M} <: Mass
     M⁻¹::M
 end
 
-DenseMass(R, C) = DenseMass(R, C, 1, LowerTriangular(Matrix(1.0I, R, R)), Matrix(1.0I, R, R))
+function DenseMass(R, C) 
+    McL = LowerTriangular(Matrix(1.0I, R, R))
+    M⁻¹ = Matrix(1.0I, R, R)
+    DenseMass(R, C, 1, McL, M⁻¹)
+end
 
 function (m::DenseMass)(samples, ν = 0.0) where T <: AbstractMatrix
     expanded = reduce(vcat, vec(s.value)' for s in samples)

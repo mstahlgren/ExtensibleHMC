@@ -1,8 +1,8 @@
-struct ColDiag{S, M} <: Mass
+struct ColDiag <: Mass
     R::Int
     C::Int
     N::Int
-    M⁻¹::M
+    M⁻¹::Matrix{Float64}
 end
 
 ColDiag(R, C) = ColDiag(R, C, 1, ones(R, C))
