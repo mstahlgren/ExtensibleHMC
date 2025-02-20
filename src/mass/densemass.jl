@@ -12,7 +12,7 @@ function DenseMass(R, C)
     DenseMass(R, C, 1, McL, M⁻¹)
 end
 
-function (m::DenseMass)(samples, ν = 0.0) where T <: AbstractMatrix
+function (m::DenseMass)(samples, ν = 0.0)
     expanded = reduce(vcat, vec(s.value)' for s in samples)
     covariance = sum(cov(view(M, :, i:i+N-1), corrected = false) for i in 1:N:size(expanded, 2))
     N₀′ = round(ν * m.N)
