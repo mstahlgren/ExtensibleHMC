@@ -1,4 +1,4 @@
-struct DenseMass{T, S, M} <: Mass{T}
+struct DenseMass{S, M} <: Mass
     McL::S
     M⁻¹::M
 end

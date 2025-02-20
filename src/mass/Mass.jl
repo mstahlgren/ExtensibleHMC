@@ -1,6 +1,4 @@
-abstract type Mass{T} end
-
-Base.eltype(::Mass{T}) where T = T
+abstract type Mass end
 
 Base.:*(m::Mass, x) = m.McL * x
 

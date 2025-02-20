@@ -1,6 +1,4 @@
-struct UnitMass{T} <: Mass{T} end
-
-UnitMass(T = Float64) = UnitMass{T}()
+struct UnitMass <: Mass end
 
 Base.:*(::UnitMass, x) = x
 
