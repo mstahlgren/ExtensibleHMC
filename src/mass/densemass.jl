@@ -8,11 +8,11 @@ end
 
 DenseMass(R, C) = DenseMass(R, C, 1, LowerTriangular(Matrix(1.0I, R, R)), Matrix(1.0I, R, R))
 
-function (m::DenseMass)(S::Samples{T}, ν = 0.0) where T <: AbstractMatrix
-    expanded = reduce(vcat, vec(s.value)' for s in S)
+function (m::DenseMass)(samples, ν = 0.0) where T <: AbstractMatrix
+    expanded = reduce(vcat, vec(s.value)' for s in samples)
     covariance = sum(cov(view(M, :, i:i+N-1), corrected = false) for i in 1:N:size(expanded, 2))
     N₀′ = round(ν * m.N)
-    N₁ = Int(N₀′ + length(S))
+    N₁ = Int(N₀′ + length(samples))
     M⁻¹₁ = (N₀′ .* m.M⁻¹ .+ covariance) ./ N₁
     McL₁ = cholesky(Hermitian(cholesky(M⁻¹₁) |> inv)).L
     DenseMass(M.R, M.C, N₁, McL₁, M⁻¹₁)

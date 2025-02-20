@@ -3,7 +3,7 @@ struct UnitMass <: Mass
     C::Int
 end
 
-(m::UnitMass)(S, ν = 0.0) = UnitMass(M.R, M.C)
+(m::UnitMass)(samples, ν = 0.0) = UnitMass(M.R, M.C)
 
 Base.rand(m::UnitMass) = randn(m.R, M.C)
 
