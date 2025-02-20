@@ -9,7 +9,7 @@ ColDiag(R, C) = ColDiag(R, C, 1, ones(R, C))
 
 function (m::ColDiag)(samples, ν = 0.0)
     expanded = reduce(hcat, vec(s.value) for s in samples)
-    variance = reshape(var(expanded, dims = 2, corrected = false), R, C)
+    variance = reshape(var(expanded, dims = 2, corrected = false), m.R, m.C)
     N₀′ = round(ν * M.N); N₁ = Int(N₀′ + length(samples))
     ColDiag(M.R, M.C, N₁, (N₀′ .* m.M⁻¹ .+ length(samples) .* variance) / N₁)
 end

@@ -19,7 +19,7 @@ function (m::DenseMass)(samples, ν = 0.0)
     N₁ = Int(N₀′ + length(samples))
     M⁻¹₁ = (N₀′ .* m.M⁻¹ .+ covariance) ./ N₁
     McL₁ = cholesky(Hermitian(cholesky(M⁻¹₁) |> inv)).L
-    DenseMass(M.R, M.C, N₁, McL₁, M⁻¹₁)
+    DenseMass(m.R, m.C, N₁, McL₁, M⁻¹₁)
 end
 
 Base.:+(x::DenseMass, y::DenseMass) = begin
