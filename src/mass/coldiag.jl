@@ -18,5 +18,5 @@ Base.:+(x::ColDiag, y::ColDiag) = ColDiag(x.R, x.C, x.N + y.N, (x.M⁻¹ + y.M�
 
 Base.rand(m::ColDiag) = sqrt.(1.0 ./ m.M⁻¹) .* randn(m.R, m.C)
 
-Base.:\(::ColDiag, x) = M⁻¹ .* x
+Base.:\(m::ColDiag, x) = m.M⁻¹ .* x
 
