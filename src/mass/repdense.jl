@@ -1,4 +1,4 @@
-struct DenseMass{S, M} <: Mass
+struct RepDenseMass{S, M} <: AbstractMass
     R::Int
     C::Int
     N::Int
@@ -6,28 +6,28 @@ struct DenseMass{S, M} <: Mass
     M⁻¹::M
 end
 
-function DenseMass(R, C) 
+function RepDenseMass(R, C) 
     McL = LowerTriangular(Matrix(1.0I, R, R))
     M⁻¹ = Matrix(1.0I, R, R)
-    DenseMass(R, C, 1, McL, M⁻¹)
+    RepDenseMass(R, C, 1, McL, M⁻¹)
 end
 
-function (m::DenseMass)(samples, ν = 0.0)
+function (m::RepDenseMass)(samples, ν = 0.0)
     expanded = reduce(vcat, vec(s.value)' for s in samples)
     covariance = sum(cov(view(M, :, i:i+N-1), corrected = false) for i in 1:N:size(expanded, 2))
     N₀′ = round(ν * m.N)
     N₁ = Int(N₀′ + length(samples))
     M⁻¹₁ = (N₀′ .* m.M⁻¹ .+ covariance) ./ N₁
     McL₁ = cholesky(Hermitian(cholesky(M⁻¹₁) |> inv)).L
-    DenseMass(m.R, m.C, N₁, McL₁, M⁻¹₁)
+    RepDenseMass(m.R, m.C, N₁, McL₁, M⁻¹₁)
 end
 
-Base.:+(x::DenseMass, y::DenseMass) = begin
+Base.:+(x::RepDenseMass, y::RepDenseMass) = begin
     M⁻¹ = (x.M⁻¹ + y.M⁻¹) ./ 2
     McL₁ = cholesky(Hermitian(cholesky(M⁻¹) |> inv)).L
-    DenseMass(x.R, x.C, x.N + y.N, McL₁, M⁻¹)
+    RepDenseMass(x.R, x.C, x.N + y.N, McL₁, M⁻¹)
 end
 
-Base.rand(m::DenseMass, x) = m.McL * randn(m.R, m.C)
+Base.rand(m::RepDenseMass, x) = m.McL * randn(m.R, m.C)
 
-Base.:\(m::Mass, x) = m.M⁻¹ * x
+Base.:\(m::RepDenseMass, x) = m.M⁻¹ * x

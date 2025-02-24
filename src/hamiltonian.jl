@@ -1,4 +1,4 @@
-struct Hamiltonian{P, M <: Mass}
+struct Hamiltonian{P, M <: AbstractMass}
     density::P # Unnormalized log likelihood, gradient
     mass::M
 end

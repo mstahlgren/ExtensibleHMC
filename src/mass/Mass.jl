@@ -1,5 +1,6 @@
-abstract type Mass end
+abstract type AbstractMass end
 
-include("unitmass.jl")
-include("densemass.jl")
-include("coldiag.jl")
+include("unit.jl")
+include("repdense.jl")
+include("diag.jl")
+include("tridiag.jl")
