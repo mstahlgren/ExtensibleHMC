@@ -1,14 +1,14 @@
-import Statistics: Statistics, var
-
-export Welford, update!, var, colsum
-
-struct Welford{T,S <: AbstractVecOrMat{T}}
+struct Welford{T, S <: AbstractVecOrMat{T}}
     n::Int
     mean::S
     M2::S
 end
 
-Welford(v) = Welford{eltype(v), typeof(v)}(0, zeros(size(v)), zeros(size(v)))
+Welford(n) = Welford{Float64, Vector{Float64}}(0, zeros(n), zeros(n))
+
+Welford(m, n) = Welford{Float64, Matrix{Float64}}(0, zeros(m, n), zeros(m, n))
+
+Welford(n, m, m2) = Welford{Float64, typeof(m)}(n, m, m2)
 
 Statistics.mean(w::Welford) = w.mean
 
