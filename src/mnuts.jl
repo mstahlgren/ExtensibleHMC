@@ -8,6 +8,8 @@ end
 
 MNUTS(ϵ) = MNUTS(ϵ, 10, 1000)
 
+(s::MNUTS)(ϵ) = MNUTS(ϵ, s.max_depth, s.max_ΔE)
+
 struct BinaryTree{T}
     left::State{T}
     right::State{T}
