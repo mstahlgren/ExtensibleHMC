@@ -11,13 +11,11 @@ function TriDiagMass(R, C)
     TriDiagMass(R, C, 1, Bidiagonal(copy(D), copy(S), :L), SymTridiagonal(D, S))
 end
 
-Base.length(m::TriDiagMass) = m.R * m.C
-
 function factorise(m::SymTridiagonal, buff = Bidiagonal(similar(m.dv), similar(m.ev), :L))
     buff.dv[1] = sqrt(m.dv[1])
     for i in 2:length(buff.dv)
-        @inbounds buff.ev[i-1] = m.ev[i-1] / buff.dv[i-1]
-        @inbounds buff.dv[i] = sqrt(m.dv[i] - buff.ev[i-1]^2)
+        buff.ev[i-1] = m.ev[i-1] / buff.dv[i-1]
+        buff.dv[i] = sqrt(m.dv[i] - buff.ev[i-1]^2)
     end
     buff
 end
@@ -31,7 +29,7 @@ function (m::TriDiagMass)(samples, ν = 0.0)
     N₀ = round(ν * m.N)
     Nₛ = Int(N₀ + length(samples))
     M⁻¹ = SymTridiagonal((N₀ .* m.M⁻¹.dv .+ dv⁻¹) ./ Nₛ, (N₀ .* m.M⁻¹.ev .+ ev⁻¹) ./ Nₛ)
-    McL = factorise(M⁻¹, m.L)
+    McL = factorise(M⁻¹)
     TriDiagMass(m.R, m.C, Nₛ, McL, M⁻¹)
 end
 
@@ -45,3 +43,4 @@ Base.rand(m::TriDiagMass) = reshape(m.L * randn(length(m)), m.C, m.R)' |> collec
 
 Base.:\(m::TriDiagMass, x) = reshape(m.M⁻¹ * vec(x'), m.C, m.R)' |> collect
 
+LinearAlgebra.logabsdet(m::TriDiagMass) = -2 * sum(log.(m.L.dv))

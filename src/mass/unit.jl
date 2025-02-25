@@ -10,3 +10,5 @@ Base.rand(m::UnitMass) = randn(m.R, m.C)
 Base.:\(::UnitMass, x) = x
 
 Base.:+(m::UnitMass, y::UnitMass) = UnitMass(m.R, m.C)
+
+LinearAlgebra.logabsdet(::UnitMass) = 0
