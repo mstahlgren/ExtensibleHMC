@@ -3,6 +3,8 @@ struct Hamiltonian{P, M <: AbstractMass}
     mass::M
 end
 
+(H::Hamiltonian)(M::AbstractMass) = Hamiltonian(H.density, M)
+
 (H::Hamiltonian)(q, a = similar(q)) = H.density(q, a)
 
 v(H::Hamiltonian, p) = H.mass\p
