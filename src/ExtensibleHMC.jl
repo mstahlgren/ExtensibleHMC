@@ -1,6 +1,6 @@
 module ExtensibleHMC
 
-import LinearAlgebra: LinearAlgebra, Hermitian, SymTridiagonal, Bidiagonal
+import LinearAlgebra: LinearAlgebra, Diagonal
 import LinearAlgebra: cholesky, logabsdet, dot, ⋅
 import Statistics: Statistics, mean, var, quantile
 import StatsBase: StatsBase, autocor
@@ -16,7 +16,7 @@ export rosenbrock
 include("state.jl")
 
 include("mass/Mass.jl")
-export AbstractMass, UnitMass, RepDenseMass, DiagMass, TriDiagMass, DiagPlus
+export AbstractMass, UnitMass, DiagMass
 
 include("hamiltonian.jl")
 export Hamiltonian
