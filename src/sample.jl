@@ -11,7 +11,7 @@ end
 
 const Samples{T} = Vector{Sample{T}}
 
-function StatsBase.sample(ϕ::Sampler, θ::Hamiltonian, q::AbstractVecOrMat, n::Int; verbose = false)
+function sample(ϕ::Sampler, θ::Hamiltonian, q::AbstractVecOrMat, n::Int; verbose = false)
     samples = Vector{Sample{typeof(q)}}(undef, n)
     for i in 1:n
         if verbose println("Sample ", i) end

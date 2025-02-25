@@ -42,7 +42,7 @@ function uturn(θ::Hamiltonian, t::T, l::T, r::T) where T <: BinaryTree
     return outer || left || right
 end
 
-function StatsBase.sample(ϕ::MNUTS, θ::Hamiltonian, q₀)
+function sample(ϕ::MNUTS, θ::Hamiltonian, q₀)
     s, turned, div = State(θ, q₀), false, false
     E₀, tree = energy(s), BinaryTree(s)
     for j = 0:ϕ.max_depth
