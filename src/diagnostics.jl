@@ -10,7 +10,6 @@ acceptrate(x::Samples) = sum(s.acceptrate * s.nsteps for s in x) / sum(s.nsteps 
 
 ndivergences(x::Samples) = sum(s.diverged for s in x)
 
-# Samples per nsteps
 function Base.summary(S::Samples)
     rnd(x) = round(x; digits = 3)
     qs = (0, 0.1, 0.5, 0.9, 1)
