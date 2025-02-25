@@ -1,22 +1,21 @@
-struct DiagMass <: AbstractMass
-    R::Int
-    C::Int
-    N::Int
-    M⁻¹::Matrix{Float64}
+struct DiagMass{N} <: AbstractMass{N}
+    M⁻¹::Vector{Float64}
+    nₛ::Int
 end
 
-DiagMass(R, C) = DiagMass(R, C, 1, ones(R, C))
+DiagMass(N) = DiagMass{N}(ones(N), 1)
 
-function (m::DiagMass)(samples, ν = 0.0)
-    expanded = reduce(hcat, vec(s.value) for s in samples)
-    variance = reshape(var(expanded, dims = 2, corrected = false), m.R, m.C)
-    N₀′ = round(ν * m.N); N₁ = Int(N₀′ + length(samples))
-    DiagMass(m.R, m.C, N₁, (N₀′ .* m.M⁻¹ .+ length(samples) .* variance) / N₁)
+function (m::DiagMass)(S, ν = 0.0)
+    V = var(values(S), dims = 2, corrected = false)
+    n₁ = round(ν * m.N)
+    nₛ = Int(N₀′) + length(S)
+    typeof(m)((n₁ .* m.M⁻¹ .+ length(S) .* V) / nₛ, nₛ)
 end
 
-Base.:+(x::DiagMass, y::DiagMass) = ColDiag(x.R, x.C, x.N + y.N, (x.M⁻¹ + y.M⁻¹) ./ 2)
+Base.:+(x::T, y::T) where T <: DiagMass = T((x.M⁻¹ .+ y.M⁻¹) ./ 2, x.N + y.N)
 
-Base.rand(m::DiagMass) = sqrt.(1.0 ./ m.M⁻¹) .* randn(m.R, m.C)
+Base.rand(m::DiagMass) = sqrt.(1 ./ m.M⁻¹) .* randn(length(m))
 
 Base.:\(m::DiagMass, x) = m.M⁻¹ .* x
 
+LinearAlgebra.logabsdet(m::DiagMass) = -sum(log.(m.M⁻¹))
