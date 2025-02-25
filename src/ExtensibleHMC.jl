@@ -3,7 +3,7 @@ module ExtensibleHMC
 import LinearAlgebra: LinearAlgebra, Hermitian, SymTridiagonal, Bidiagonal
 import LinearAlgebra: cholesky, logabsdet, dot, ⋅
 import Statistics: Statistics, mean, var, quantile
-import StatsBase: autocor
+import StatsBase: StatsBase, autocor
 import LogExpFunctions: logaddexp
 import RecipesBase: @recipe
 
@@ -22,17 +22,15 @@ include("hamiltonian.jl")
 export Hamiltonian
 
 include("sample.jl")
-export Sample, Samples, sample
+export Sample, Samples, sample, adapt
+
+include("model.jl")
+export AbstractModel
 
 include("mnuts.jl")
 export MNUTS
 
-include("adapt.jl")
-export init_ϵ, tune_ϵ_step, tune_ϵ_dual
-
 include("diagnostics.jl")
-export samples, acceptrate, ess
-
-include("welford.jl")
+export acceptrate, ess
 
 end # module ExtensibleHMC
