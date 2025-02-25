@@ -1,6 +1,6 @@
 abstract type Sampler end
 
-struct Sample{T <: AbstractVecOrMat}
+struct Sample{T <: AbstractVector}
     value::T
     ll::Float64
     nsteps::Int
@@ -11,22 +11,33 @@ end
 
 const Samples{T} = Vector{Sample{T}}
 
-function sample(ϕ::Sampler, θ::Hamiltonian, q::AbstractVecOrMat, n::Int; verbose = false)
-    samples = Vector{Sample{typeof(q)}}(undef, n)
+function sample(fun::Function, q::AbstractVector, n::Int, step = 0.05)
+    return sample(MNUTS(step), Hamiltonian(fun, UnitMass(length(q))), q, n)
+end
+
+function sample(ϕ::Sampler, θ::Hamiltonian, q::T, n::Int; verbose = false) where T <: AbstractVector
+    samples = Samples{T}(undef, n)
     for i in 1:n
-        if verbose println("Sample ", i) end
         s = sample(ϕ, θ, q)
-        samples[i] = s
-        q = s.value
-        if verbose 
-            print("Completed :: LL ", round(s.ll, digits = 4))
-            print(" :: in $s.nsteps steps")
-            if !s.accepted print(" :: Rejected") end
-            if s.diverged print(" :: Diverged") end
-            println("")
-        end
+        q, samples[i] = s.value, s
+        if !verbose continue end
+        print("Sample $i Completed :: LL ", round(s.ll, digits = 4), " :: in $(s.nsteps) steps")
+        if s.diverged println(" :: Diverged") 
+        elseif !s.accepted println(" :: Rejected") 
+        else println("") end
     end
     return samples
+end
+
+function adapt(ϕ::Sampler, θ::Hamiltonian, q, epochs, n)
+    for _ in 1:epochs
+        S = sample(ϕ, θ, q, n)
+        α, q = acceptrate(S), last(S).value
+        ν = if α > 0.9 1.0/0.95 elseif α < 0.7 0.95 else 1.0 end
+        ϕ, θ = ϕ(ϕ.ϵ * ν), θ(θ.mass(S, 1.0)) 
+        display(ϕ)
+    end
+    return ϕ, θ, q
 end
 
 Base.show(io::IO, ::MIME"text/plain", x::Samples) = summary(x)
