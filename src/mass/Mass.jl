@@ -1,9 +1,9 @@
-abstract type AbstractMass end
+abstract type AbstractMass{N} end
 
-Base.length(m::AbstractMass) = m.R * m.C
+Base.length(::AbstractMass{N}) where N = N
 
 include("unit.jl")
-include("repdense.jl")
+#include("repdense.jl")
 include("diag.jl")
-include("tridiag.jl")
-include("diagplus.jl")
+#include("tridiag.jl")
+#include("diagplus.jl")
