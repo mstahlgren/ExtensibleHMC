@@ -1,4 +1,4 @@
-struct State{T <: AbstractVecOrMat}
+struct State{T <: AbstractVector}
     position::T
     momentum::T
     gradient::T
