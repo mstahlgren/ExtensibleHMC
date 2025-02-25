@@ -1,14 +1,13 @@
-struct UnitMass <: AbstractMass
-    R::Int
-    C::Int
-end
+struct UnitMass{N} <: AbstractMass end
 
-(m::UnitMass)(samples, ν = 0.0) = UnitMass(m.R, m.C)
+UnitMass(N::Int) = UnitMass{N}()
 
-Base.rand(m::UnitMass) = randn(m.R, m.C)
+(m::UnitMass)(samples, ν = 0.0) = m
+
+Base.rand(m::UnitMass{N}) where N = randn(N)
 
 Base.:\(::UnitMass, x) = x
 
-Base.:+(m::UnitMass, y::UnitMass) = UnitMass(m.R, m.C)
+Base.:+(m::UnitMass, y::UnitMass) = m
 
 LinearAlgebra.logabsdet(::UnitMass) = 0
