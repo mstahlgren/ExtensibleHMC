@@ -6,12 +6,14 @@ function hamiltonian end
 
 function init end
 
+function set end
+
 function sample(m::AbstractModel, n::Int, args...) 
     sample(sampler(m), hamiltonian(m, args...), init(m), n)
 end
 
-function adapt(m::AbstractModel, epochs, n)
-    ϕ, ψ, q = adapt(sampler(m), hamiltonian(m), init(m), epochs, n)
-    set(m; mass = ψ) |> x->set(x; step = ϕ) |> x->set(m; init = q)
+function adapt(m::AbstractModel, epochs, n, args...)
+    ϕ, θ, q = adapt(sampler(m), hamiltonian(m, args...), init(m), epochs, n)
+    set(m; mass = θ.mass, step = ϕ.ϵ, init = q)
 end
 
