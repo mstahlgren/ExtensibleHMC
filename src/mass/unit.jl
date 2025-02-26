@@ -1,5 +1,5 @@
 struct UnitMass{D} <: AbstractMass{D}
-    S::NTuple{D, Int}
+    size::NTuple{D, Int}
 end
 
 UnitMass(size...) = UnitMass{length(size)}(size)
