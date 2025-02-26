@@ -1,6 +1,6 @@
 abstract type Sampler end
 
-struct Sample{T <: AbstractVector}
+struct Sample{T <: AbstractArray}
     value::T
     ll::Float64
     nsteps::Int
@@ -11,11 +11,11 @@ end
 
 const Samples{T} = Vector{Sample{T}}
 
-function sample(fun::Function, q::AbstractVector, n::Int, step = 0.05)
+function sample(fun::Function, q::AbstractArray, n::Int, step = 0.05)
     return sample(MNUTS(step), Hamiltonian(fun, UnitMass(length(q))), q, n)
 end
 
-function sample(ϕ::Sampler, θ::Hamiltonian, q::T, n::Int; verbose = false) where T <: AbstractVector
+function sample(ϕ::Sampler, θ::Hamiltonian, q::T, n::Int; verbose = false) where T <: AbstractArray
     samples = Samples{T}(undef, n)
     for i in 1:n
         s = sample(ϕ, θ, q)
@@ -30,12 +30,12 @@ function sample(ϕ::Sampler, θ::Hamiltonian, q::T, n::Int; verbose = false) whe
 end
 
 function adapt(ϕ::Sampler, θ::Hamiltonian, q, epochs, n)
-    for _ in 1:epochs
+    for e in 1:epochs
         S = sample(ϕ, θ, q, n)
         α, q = acceptrate(S), last(S).value
         ν = if α > 0.9 1.0/0.95 elseif α < 0.7 0.95 else 1.0 end
         ϕ, θ = ϕ(ϕ.ϵ * ν), θ(θ.mass(S, 1.0)) 
-        display(ϕ)
+        println("Epoch $e completed :: step $(ϕ.ϵ)")
     end
     return ϕ, θ, q
 end
