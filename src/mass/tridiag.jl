@@ -39,6 +39,8 @@ function Base.:+(x::TriDiagMass, y::TriDiagMass)
     TriDiagMass(x.R, x.C, x.N + y.N, McL, M⁻¹)
 end
 
+# Verify with https://math.stackexchange.com/questions/1845132/sample-points-from-a-multivariate-normal-distribution-using-only-the-precision-m
+# This is likely wrong as L should be used with \
 Base.rand(m::TriDiagMass) = reshape(m.L * randn(length(m)), m.C, m.R)' |> collect
 
 Base.:\(m::TriDiagMass, x) = reshape(m.M⁻¹ * vec(x'), m.C, m.R)' |> collect
