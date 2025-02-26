@@ -6,8 +6,8 @@ function hamiltonian end
 
 function init end
 
-function sample(m::AbstractModel, n::Int) 
-    sample(sampler(m), hamiltonian(m), init(m), n)
+function sample(m::AbstractModel, n::Int, args...) 
+    sample(sampler(m), hamiltonian(m, args...), init(m), n)
 end
 
 function adapt(m::AbstractModel, epochs, n)
