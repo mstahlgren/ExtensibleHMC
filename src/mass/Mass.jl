@@ -1,11 +1,12 @@
-abstract type AbstractMass{S} end
+abstract type AbstractMass{D} end
 
-Base.size(::AbstractMass{S}) where S = S
+Base.size(m::AbstractMass) = m.size
 
-Base.length(::AbstractMass{S}) where S = prod(S)
+Base.length(m::AbstractMass) = prod(size(m))
 
 include("unit.jl")
 #include("repdense.jl")
 include("diag.jl")
 #include("tridiag.jl")
 #include("diagplus.jl")
+#include("altunit.jl")

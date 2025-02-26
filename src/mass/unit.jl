@@ -1,6 +1,8 @@
-struct UnitMass{S} <: AbstractMass{S} end
+struct UnitMass{D} <: AbstractMass{D}
+    S::NTuple{D, Int}
+end
 
-UnitMass(size...) = UnitMass{size}()
+UnitMass(size...) = UnitMass{length(size)}(size)
 
 (m::UnitMass)(samples, ν = 0.0) = m
 
@@ -11,5 +13,3 @@ Base.:\(::UnitMass, x) = x
 Base.:+(m::UnitMass, ::UnitMass) = m
 
 LinearAlgebra.logabsdet(::UnitMass) = 0
-
-testing(::UnitMass{S}) where S = S
