@@ -1,6 +1,8 @@
-abstract type AbstractMass{N} end
+abstract type AbstractMass{S} end
 
-Base.length(::AbstractMass{N}) where N = N
+Base.size(::AbstractMass{S}) where S = S
+
+Base.length(::AbstractMass{S}) where S = prod(S)
 
 include("unit.jl")
 #include("repdense.jl")
