@@ -14,6 +14,6 @@ end
 
 function adapt(m::AbstractModel, epochs, n, args...)
     ϕ, θ, q = adapt(sampler(m), hamiltonian(m, args...), init(m), epochs, n)
-    set(m; mass = θ.mass, step = ϕ.ϵ, init = q)
+    set(m; m = θ.mass, s = ϕ.ϵ, i = q)
 end
 
