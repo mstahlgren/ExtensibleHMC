@@ -4,9 +4,9 @@ Base.values(x::Samples, idx...) = reduce(hcat, s.value[[idx...]] for s in x)
 
 StatsBase.autocor(x::Samples) = autocor(Base.values(x)')
 
-ess(x::Matrix, N, agg) = agg(vec(N ./ (2 .* sum(x, dims = 1) .- 1)))
+ess(x::Matrix, N, agg) = agg(vec(N ./ (2 .* sum(abs.(x), dims = 1) .- 1)))
 
-ess(x::Samples, agg) = ess(autocor(x), length(x), agg)
+ess(x::Samples, agg) = ess(autocor(x), length(x), agg) 
 
 acceptrate(x::Samples) = sum(s.acceptrate * s.nsteps for s in x) / sum(s.nsteps for s in x)
 
@@ -23,7 +23,7 @@ function Base.summary(S::Samples)
     println("Highest autocorr: ", ess(ac, N, argmax))
     println("Acceptance rate: ", rnd(acceptrate(S)))
     println("Divergences: ", rnd(ndivergences(S)))
-    println("N minESS per 100 steps: ", rnd(100*ess(S, minimum) / sum(s.nsteps for s in S)))
+    println("N minESS per 100 steps: ", rnd(100*ess(ac, N, minimum) / sum(s.nsteps for s in S)))
     println("Number of steps: ", rnd.(quantile([s.nsteps for s in S], qs)))
     println("Autocorrelation τ¹⁻³: ", rnd.(vec(mean(ac[2:4, :], dims = 2))))
     print("Posterior ll: ", rnd.(quantile([s.ll for s in S], qs)))
