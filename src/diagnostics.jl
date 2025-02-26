@@ -1,4 +1,6 @@
-Base.values(x::Samples) = reduce(hcat, s.value for s in x)
+Base.values(x::Samples) = reduce(hcat, vec(s.value) for s in x)
+
+Base.values(x::Samples, idx...) = reduce(hcat, s.value[[idx...]] for s in x)
 
 StatsBase.autocor(x::Samples) = autocor(Base.values(x)')
 
@@ -23,20 +25,22 @@ function Base.summary(S::Samples)
     println("Divergences: ", rnd(ndivergences(S)))
     println("N minESS per 100 steps: ", rnd(100*ess(S, minimum) / sum(s.nsteps for s in S)))
     println("Number of steps: ", rnd.(quantile([s.nsteps for s in S], qs)))
-    println("Autocorrelation τ¹⁻³: ", rnd.(vec(mean(ac[2:4, :], dims = 1))))
+    println("Autocorrelation τ¹⁻³: ", rnd.(vec(mean(ac[2:4, :], dims = 2))))
     print("Posterior ll: ", rnd.(quantile([s.ll for s in S], qs)))
 end
 
 # QT plot
-@recipe function plot(S::Samples, idx)
+@recipe function f(S::Samples, id)
+    seriestype := :line
     label := nothing
-    return samples(S, x->x[idx])
+    return values(S, id)'
 end
 
 # QQ scatter plot
-@recipe function scatter(S::Samples, id₁, id₂)
-    q = reduce(hcat, samples(S, x->x[[id₁, id₂]]))'
+@recipe function f(S::Samples, id₁, id₂)
+    seriestype := :scatter
     label := nothing
-    alpha := 100/length(S)
-    view(q,:,id₁), view(q,:,id₂)
+    alpha := 100 / length(S)
+    q = values(S, id₁, id₂)'
+    view(q, :, id₁), view(q, :, id₂)
 end
