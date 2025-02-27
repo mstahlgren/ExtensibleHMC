@@ -4,7 +4,9 @@ end
 
 UnitMass(size...) = UnitMass{length(size)}(size)
 
-(m::UnitMass)(samples, ν = 0.0) = m
+(m::UnitMass)(samples, ν) = m
+
+Base.size(m::UnitMass) = m.size
 
 Base.rand(m::UnitMass) = m |> size |> randn
 
