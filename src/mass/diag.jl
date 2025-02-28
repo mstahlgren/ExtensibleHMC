@@ -7,9 +7,8 @@ DiagMass(size...) = DiagMass{length(size)}(ones(size...), 1)
 
 (m::DiagMass)(S, ν) = begin
     V = reshape(var(values(S), dims = 2, corrected = false), size(m))
-    n₋ = round(ν * m.N)
-    nₛ = Int(n₋) + length(S)
-    typeof(m)((n₋ .* m.M⁻¹ .+ length(S) .* V) / nₛ, nₛ)
+    n₋ = round(ν * m.N); nₛ = Int(n₋) + length(S); η = n₋ / nₛ
+    typeof(m)(η .* m.M⁻¹ .+ V, nₛ)
 end
 
 Base.size(m::DiagMass) = size(m.M⁻¹)
