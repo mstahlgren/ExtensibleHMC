@@ -9,6 +9,6 @@ end
 
 v(H::Hamiltonian, p) = H.mass\p
 
-kinetic(H::Hamiltonian, p) = 0.5 * dot(p, v(H, p)) + logabsdet(H.mass)
+kinetic(H::Hamiltonian, p) = 0.5 * dot(p, v(H, p)) 
 
 refresh(H::Hamiltonian) = rand(H.mass)
