@@ -20,12 +20,23 @@ struct BinaryTree{T}
     steps::Int
 end
 
-function BinaryTree(s)
+#= function BinaryTree(s)
     BinaryTree(State(q(s), p(s), a(s) |> copy, ll(s), ke(s)), s, s, p(s), 0.0, 0.0, 0)
+end =#
+
+#= function State(θ, q₀)
+    p, ll, Δll = refresh(θ), θ(q₀)...
+    return State(copy(q₀), p, Δll, ll, kinetic(θ, p))
+end =#
+
+function BinaryTree(θ::Hamiltonian, q₀, buffer)
+    s = State(θ, q₀, buffer)
+    ls = State(q(s), p(s), copy!(pop!(buffer), a(s)), ll(s), ke(s))
+    BinaryTree(ls, s, s, p(s), 0.0, 0.0, 0) # Is it truly safe to reuse these when combining? shoooould be..
 end
 
 function BinaryTree(prop::State, l::BinaryTree, r::BinaryTree, esum = logaddexp(l.esum, r.esum))
-    BinaryTree(l.left, r.right, prop, l.msum + r.msum, l.psum + r.psum, esum, l.steps + r.steps)
+    BinaryTree(l.left, r.right, prop, l.msum .+= r.msum, l.psum + r.psum, esum, l.steps + r.steps)
 end
 
 function BinaryTree(l::BinaryTree, r::BinaryTree)
@@ -45,8 +56,11 @@ function uturn(θ::Hamiltonian, t::T, l::T, r::T) where T <: BinaryTree
 end
 
 function sample(ϕ::MNUTS, θ::Hamiltonian, q₀, buffer::Buffer = Buffer(ϕ, q₀))
-    s, turned, div = State(θ, q₀), false, false
-    E₀, tree = energy(s), BinaryTree(s)
+#=     s, turned, div = State(θ, q₀), false, false
+    E₀, tree = energy(s), BinaryTree(s) 
+    s,  = State(θ, q₀), false, false =#
+    tree = BinaryTree(θ, q₀, buffer)
+    E₀, turned, div = energy(tree.prop), false, false
     for j = 0:ϕ.max_depth
         v = rand((-1, 1))
         if isone(v)
@@ -80,7 +94,7 @@ function buildtree(ϕ::MNUTS, θ, s, v, j, E₀, buffer)
 end
 
 function buildleaf(ϕ::MNUTS, θ, s, ϵ, E₀, buffer)
-    s′ = leapfrog(θ, s, ϵ, pop!(buffer), pop!(buffer))
+    s′ = leapfrog(θ, s, ϵ, buffer)
     E′ = energy(s′)
     ΔE = E′ - E₀
     P = min(1.0, exp(-ΔE))

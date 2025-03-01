@@ -6,9 +6,14 @@ struct State{T <: AbstractArray}
     ke::Float64
 end
 
-function State(θ, q₀)
+#= function State(θ, q₀)
     p, ll, Δll  = refresh(θ), θ(q₀)...
     return State(copy(q₀), p, Δll, ll, kinetic(θ, p))
+end =#
+
+function State(θ, q₀, buffer)
+    p, ll, Δll = refresh(θ, pop!(buffer)), θ(q₀, pop!(buffer))...
+    return State(copy!(pop!(buffer), q₀), p, Δll, ll, kinetic(θ, p))
 end
 
 q(s::State) = s.position
@@ -23,7 +28,8 @@ ke(s::State) = s.ke
 
 energy(s::State) = s.ke - s.ll
 
-function leapfrog(θ, s₀, ϵ, q₁ = similar(q(s₀)), p₁ = similar(p(s₀)))
+function leapfrog(θ, s₀, ϵ, buffer)
+    q₁, p₁ = pop!(buffer), pop!(buffer)
     p₁ .= p(s₀) .+ 0.5 .* ϵ .* a(s₀)
     q₁ .= q(s₀) .+ ϵ .* v(θ, p₁) # v allocates for non unit masses
     ll, a₁ = θ(q₁, a(s₀))
