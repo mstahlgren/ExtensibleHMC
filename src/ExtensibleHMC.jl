@@ -4,6 +4,7 @@ import LinearAlgebra: LinearAlgebra, Diagonal
 import LinearAlgebra: cholesky, logabsdet, dot, ⋅
 import Statistics: Statistics, mean, var, quantile
 import StatsBase: StatsBase, autocor
+import Random: randn!
 import LogExpFunctions: logaddexp
 import RecipesBase: @recipe
 
