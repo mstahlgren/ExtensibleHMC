@@ -13,7 +13,7 @@ end
 
 Base.size(m::DiagMass) = size(m.M⁻¹)
 
-Base.rand(m::DiagMass) = sqrt.(1 ./ m.M⁻¹) .* randn(size(m))
+Base.rand(m::DiagMass, buffer) = sqrt.(1 ./ m.M⁻¹) .* randn!(pop!(buffer))
 
 Base.:\(m::DiagMass, x) = m.M⁻¹ .* x
 

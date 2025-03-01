@@ -8,7 +8,7 @@ UnitMass(size...) = UnitMass{length(size)}(size)
 
 Base.size(m::UnitMass) = m.size
 
-Base.rand(m::UnitMass) = m |> size |> randn
+Base.rand(::UnitMass, buffer) = randn!(pop!(buffer))
 
 Base.:\(::UnitMass, x) = x
 
