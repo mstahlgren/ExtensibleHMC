@@ -12,7 +12,7 @@ end
 end =#
 
 function State(θ, q₀, buffer)
-    p, ll, Δll = refresh(θ, pop!(buffer)), θ(q₀, pop!(buffer))...
+    p, ll, Δll = refresh(θ, buffer), θ(q₀, pop!(buffer))...
     return State(copy!(pop!(buffer), q₀), p, Δll, ll, kinetic(θ, p))
 end
 
