@@ -13,6 +13,8 @@ rosenbrock(x) = rosenbrock(x[1], x[2], 1, 100)
 
 export rosenbrock
 
+include("buffer.jl")
+
 include("state.jl")
 
 include("mass/Mass.jl")

@@ -44,16 +44,16 @@ function uturn(θ::Hamiltonian, t::T, l::T, r::T) where T <: BinaryTree
     return outer || left || right
 end
 
-function sample(ϕ::MNUTS, θ::Hamiltonian, q₀)
+function sample(ϕ::MNUTS, θ::Hamiltonian, q₀, buffer::Buffer = Buffer(ϕ, q₀))
     s, turned, div = State(θ, q₀), false, false
     E₀, tree = energy(s), BinaryTree(s)
     for j = 0:ϕ.max_depth
         v = rand((-1, 1))
         if isone(v)
-            tree′, turned, div = buildtree(ϕ, θ, tree.right, 1, j, E₀)
+            tree′, turned, div = buildtree(ϕ, θ, tree.right, 1, j, E₀, buffer)
             ltree, rtree = tree, tree′
         else
-            tree′, turned, div = buildtree(ϕ, θ, tree.left, -1, j, E₀)
+            tree′, turned, div = buildtree(ϕ, θ, tree.left, -1, j, E₀, buffer)
             ltree, rtree = tree′, tree
         end
         accepted = !div && !turned && mh(tree.esum, tree′.esum)
@@ -61,26 +61,26 @@ function sample(ϕ::MNUTS, θ::Hamiltonian, q₀)
         turned = turned || uturn(θ, tree, ltree, rtree)
         if div || turned break end
     end
-    return Sample(q(tree.prop), ll(tree.prop), tree.steps, tree.psum / tree.steps, div, !div && !turned)
+    return Sample(copy(q(tree.prop)), ll(tree.prop), tree.steps, tree.psum / tree.steps, div, !div && !turned)
 end
 
-function buildtree(ϕ::MNUTS, θ, s, v, j, E₀)
-    if iszero(j) return buildleaf(ϕ, θ, s, v * ϕ.ϵ, E₀) end
-    tree₁, uturn₁, div₁ = buildtree(ϕ, θ, s, v, j - 1, E₀)
+function buildtree(ϕ::MNUTS, θ, s, v, j, E₀, buffer)
+    if iszero(j) return buildleaf(ϕ, θ, s, v * ϕ.ϵ, E₀, buffer) end
+    tree₁, uturn₁, div₁ = buildtree(ϕ, θ, s, v, j - 1, E₀, buffer)
     if uturn₁ || div₁ return tree₁, uturn₁, div₁ end
     if isone(v)
-        tree₂, uturn₂, div₂ = buildtree(ϕ, θ, tree₁.right, 1, j - 1, E₀)
+        tree₂, uturn₂, div₂ = buildtree(ϕ, θ, tree₁.right, 1, j - 1, E₀, buffer)
         ltree, rtree = tree₁, tree₂
     else 
-        tree₂, uturn₂, div₂ = buildtree(ϕ, θ, tree₁.left, -1, j - 1, E₀)
+        tree₂, uturn₂, div₂ = buildtree(ϕ, θ, tree₁.left, -1, j - 1, E₀, buffer)
         ltree, rtree = tree₂, tree₁
     end
     tr = BinaryTree(ltree, rtree)
     return tr, uturn₂ || uturn(θ, tr, ltree, rtree), div₂
 end
 
-function buildleaf(ϕ::MNUTS, θ, s, ϵ, E₀)
-    s′ = leapfrog(θ, s, ϵ)
+function buildleaf(ϕ::MNUTS, θ, s, ϵ, E₀, buffer)
+    s′ = leapfrog(θ, s, ϵ, pop!(buffer), pop!(buffer))
     E′ = energy(s′)
     ΔE = E′ - E₀
     P = min(1.0, exp(-ΔE))

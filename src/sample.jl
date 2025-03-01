@@ -16,10 +16,12 @@ function sample(fun::Function, q::AbstractArray, n::Int, step = 0.05)
 end
 
 function sample(ϕ::Sampler, θ::Hamiltonian, q::T, n::Int; verbose = false) where T <: AbstractArray
+    buffer = Buffer(ϕ, q)
     samples = Samples{T}(undef, n)
     for i in 1:n
-        s = sample(ϕ, θ, q)
+        s = sample(ϕ, θ, q, buffer)
         q, samples[i] = s.value, s
+        reset!(buffer)
         if !verbose continue end
         print("Sample $i Completed :: LL ", round(s.ll, digits = 4), " :: in $(s.nsteps) steps")
         if s.diverged println(" :: Diverged") 

@@ -23,9 +23,9 @@ ke(s::State) = s.ke
 
 energy(s::State) = s.ke - s.ll
 
-function leapfrog(θ, s₀, ϵ)
-    p₁ = p(s₀) .+ 0.5 .* ϵ .* a(s₀)
-    q₁ = q(s₀) .+ ϵ .* v(θ, p₁)
+function leapfrog(θ, s₀, ϵ, q₁ = similar(q(s₀)), p₁ = similar(p(s₀)))
+    p₁ .= p(s₀) .+ 0.5 .* ϵ .* a(s₀)
+    q₁ .= q(s₀) .+ ϵ .* v(θ, p₁) # v allocates for non unit masses
     ll, a₁ = θ(q₁, a(s₀))
     p₁ .+= 0.5 .* ϵ .* a₁
     return State(q₁, p₁, a₁, ll, kinetic(θ, p₁))
