@@ -11,9 +11,13 @@ DiagMass(size...) = DiagMass{length(size)}(ones(size...), 1)
     typeof(m)(η .* m.M⁻¹ .+ V, nₛ)
 end
 
-Base.size(m::DiagMass) = size(m.M⁻¹)
+Base.rand(m::DiagMass, buffer) = begin
+    x = randn!(pop!(buffer))
+    x .*= sqrt.(1 ./ m.M⁻¹)
+    return x
+end
 
-Base.rand(m::DiagMass, buffer) = sqrt.(1 ./ m.M⁻¹) .* randn!(pop!(buffer))
+Base.size(m::DiagMass) = size(m.M⁻¹)
 
 Base.:\(m::DiagMass, x) = m.M⁻¹ .* x
 
