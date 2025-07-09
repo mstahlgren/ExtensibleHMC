@@ -35,7 +35,7 @@ function adapt(ϕ::Sampler, θ::Hamiltonian, q, epochs, n)
     for e in 1:epochs
         S = sample(ϕ, θ, q, n)
         α, q = acceptrate(S), last(S).value
-        ν = if α > 0.9 1.0/0.95 elseif α < 0.7 0.95 else 1.0 end
+        ν = if α > 0.9 1.0/0.90 elseif α < 0.7 0.90 else 1.0 end
         ϕ, θ = ϕ(ϕ.ϵ * ν), θ(θ.mass(S, 0.95)) 
         println("Epoch $e completed :: step $(ϕ.ϵ)")
     end
