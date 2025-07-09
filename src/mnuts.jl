@@ -20,45 +20,33 @@ struct BinaryTree{T}
     steps::Int
 end
 
-#= function BinaryTree(s)
-    BinaryTree(State(q(s), p(s), a(s) |> copy, ll(s), ke(s)), s, s, p(s), 0.0, 0.0, 0)
-end =#
-
-#= function State(θ, q₀)
-    p, ll, Δll = refresh(θ), θ(q₀)...
-    return State(copy(q₀), p, Δll, ll, kinetic(θ, p))
-end =#
-
 function BinaryTree(θ::Hamiltonian, q₀, buffer)
     s = State(θ, q₀, buffer)
     ls = State(q(s), p(s), copy!(pop!(buffer), a(s)), ll(s), ke(s))
-    BinaryTree(ls, s, s, p(s), 0.0, 0.0, 0) # Is it truly safe to reuse these when combining? shoooould be..
+    BinaryTree(ls, s, s, p(s), 0.0, 0.0, 0)
 end
 
-function BinaryTree(prop::State, l::BinaryTree, r::BinaryTree, esum = logaddexp(l.esum, r.esum))
-    BinaryTree(l.left, r.right, prop, l.msum .+= r.msum, l.psum + r.psum, esum, l.steps + r.steps)
+function BinaryTree(prop::State, l::BinaryTree, r::BinaryTree, buffer, esum = logaddexp(l.esum, r.esum))
+    BinaryTree(l.left, r.right, prop, pop!(buffer) .= l.msum .+ r.msum, l.psum + r.psum, esum, l.steps + r.steps)
 end
 
-function BinaryTree(l::BinaryTree, r::BinaryTree)
+function BinaryTree(l::BinaryTree, r::BinaryTree, buffer)
     esum = logaddexp(l.esum, r.esum)
-    BinaryTree(mh(esum, l.esum) ? l.prop : r.prop, l, r, esum)
+    BinaryTree(mh(esum, l.esum) ? l.prop : r.prop, l, r, buffer, esum)
 end
 
 mh(a, p) = rand() < exp(p - a)
 
 uturn(msum, vₗ, vᵣ) = vₗ ⋅ msum < 0 || vᵣ ⋅ msum < 0
 
-function uturn(θ::Hamiltonian, t::T, l::T, r::T) where T <: BinaryTree
+function uturn(θ::Hamiltonian, t::T, l::T, r::T, buffer) where T <: BinaryTree
     outer = uturn(t.msum, v(θ, p(t.left)), v(θ, p(t.right)))
-    left  = uturn(l.msum .+ p(r.left), v(θ, p(l.left)), v(θ, p(r.left)))
-    right = uturn(r.msum .+ p(l.right), v(θ, p(l.right)), v(θ, p(r.right)))
+    left  = uturn(peek(buffer) .= l.msum .+ p(r.left), v(θ, p(l.left)), v(θ, p(r.left)))
+    right = uturn(peek(buffer) .= r.msum .+ p(l.right), v(θ, p(l.right)), v(θ, p(r.right)))
     return outer || left || right
 end
 
 function sample(ϕ::MNUTS, θ::Hamiltonian, q₀, buffer::Buffer = Buffer(ϕ, q₀))
-#=     s, turned, div = State(θ, q₀), false, false
-    E₀, tree = energy(s), BinaryTree(s) 
-    s,  = State(θ, q₀), false, false =#
     tree = BinaryTree(θ, q₀, buffer)
     E₀, turned, div = energy(tree.prop), false, false
     for j = 0:ϕ.max_depth
@@ -71,8 +59,8 @@ function sample(ϕ::MNUTS, θ::Hamiltonian, q₀, buffer::Buffer = Buffer(ϕ, q�
             ltree, rtree = tree′, tree
         end
         accepted = !div && !turned && mh(tree.esum, tree′.esum)
-        tree = BinaryTree(accepted ? tree′.prop : tree.prop, ltree, rtree)
-        turned = turned || uturn(θ, tree, ltree, rtree)
+        tree = BinaryTree(accepted ? tree′.prop : tree.prop, ltree, rtree, buffer)
+        turned = turned || uturn(θ, tree, ltree, rtree, buffer)
         if div || turned break end
     end
     return Sample(copy(q(tree.prop)), ll(tree.prop), tree.steps, tree.psum / tree.steps, div, !div && !turned)
@@ -89,8 +77,8 @@ function buildtree(ϕ::MNUTS, θ, s, v, j, E₀, buffer)
         tree₂, uturn₂, div₂ = buildtree(ϕ, θ, tree₁.left, -1, j - 1, E₀, buffer)
         ltree, rtree = tree₂, tree₁
     end
-    tr = BinaryTree(ltree, rtree)
-    return tr, uturn₂ || uturn(θ, tr, ltree, rtree), div₂
+    tr = BinaryTree(ltree, rtree, buffer)
+    return tr, uturn₂ || uturn(θ, tr, ltree, rtree, buffer), div₂
 end
 
 function buildleaf(ϕ::MNUTS, θ, s, ϵ, E₀, buffer)
