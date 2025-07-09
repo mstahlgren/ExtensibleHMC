@@ -25,8 +25,8 @@ function Base.summary(S::Samples)
     println("Divergences: ", rnd(ndivergences(S)))
     println("N minESS per 100 steps: ", rnd(100*ess(ac, N, minimum) / sum(s.nsteps for s in S)))
     println("Number of steps: ", rnd.(quantile([s.nsteps for s in S], qs)))
-    println("Autocorrelation τ¹⁻³: ", rnd.(vec(mean(ac[2:4, :], dims = 2))))
-    print("Posterior ll: ", rnd.(quantile([s.ll for s in S], qs)))
+    println("Posterior ll: ", rnd.(quantile([s.ll for s in S], qs)))
+    if N > 5 print("Autocorrelation τ¹⁻³: ", rnd.(vec(mean(ac[2:4, :], dims = 2)))) end
 end
 
 # QT plot
