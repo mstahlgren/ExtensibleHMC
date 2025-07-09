@@ -1,19 +1,4 @@
-#= mutable struct Buffer{T <: AbstractArray}
-    values      ::Vector{T}
-    current     ::Int
-end
-
-Buffer(sampler, example) = Buffer([similar(example) for _ in 1:2*(2^(sampler.max_depth+1)-1)], 1)
-
-reset!(b::Buffer) = b.current = 1
-
-function Base.pop!(b::Buffer)
-    if b.current > length(b.values) throw(BoundsError(b, b.current)) end
-    b.current += 1
-    return @inbounds b.values[b.current - 1]
-end =#
-
-buffsize(sampler) = 2*(2^(sampler.max_depth+1)-1) # number of elements needed
+buffsize(sampler) = 3 * (2^(sampler.max_depth+1)-1) + 5 # 5 => 63 => 193, 6 => 127 => 385, 7 => 255 => 769
 
 mutable struct Buffer
     values      ::Matrix{Float64}
@@ -26,7 +11,14 @@ Buffer(sampler, ex) = Buffer(Matrix{Float64}(undef, size(ex, 1), size(ex, 2) * b
 reset!(b::Buffer) = b.current = 1
 
 function Base.pop!(b::Buffer)
-    if b.current > length(b.values) throw(BoundsError(b, b.current)) end
+    if b.current > size(b.values, 2) throw(BoundsError(b, b.current)) end
+    retrange = b.current:b.current+b.step-1
     b.current += b.step
+    #println("$((b.current-1) / b.step), out of $(size(b.values, 2)/b.step)")
+    return @inbounds view(b.values, :, retrange)
+end
+
+function peek(b::Buffer)
+    if b.current > size(b.values, 2) throw(BoundsError(b, b.current)) end
     return @inbounds view(b.values, :, b.current:b.current+b.step-1)
 end
