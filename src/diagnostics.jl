@@ -2,7 +2,7 @@ Base.values(x::Samples) = reduce(hcat, vec(s.value) for s in x)
 
 Base.values(x::Samples, idx...) = reduce(hcat, s.value[[idx...]] for s in x)
 
-function ess(x::Vector)
+function ess(x)
     a = autocor(x)    
     l = length(a) + iseven(length(a)) - 1
     M = a[1:2:l] .+ a[2:2:l]
