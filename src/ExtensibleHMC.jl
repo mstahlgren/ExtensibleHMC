@@ -3,7 +3,7 @@ module ExtensibleHMC
 import LinearAlgebra: LinearAlgebra, Diagonal, Bidiagonal, SymTridiagonal
 import LinearAlgebra: cholesky, logabsdet, dot, ⋅
 import Statistics: Statistics, mean, var, quantile
-import StatsBase: StatsBase, autocor
+import StatsBase: autocor
 import Random: randn!
 import LogExpFunctions: logaddexp
 import RecipesBase: @recipe
