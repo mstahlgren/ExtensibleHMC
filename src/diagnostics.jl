@@ -2,11 +2,16 @@ Base.values(x::Samples) = reduce(hcat, vec(s.value) for s in x)
 
 Base.values(x::Samples, idx...) = reduce(hcat, s.value[[idx...]] for s in x)
 
-StatsBase.autocor(x::Samples) = autocor(Base.values(x)')
+function ess(x::Vector)
+    a = autocor(x)    
+    l = length(a) + iseven(length(a)) - 1
+    M = a[1:2:l] .+ a[2:2:l]
+    i = findfirst(x->x<0, M)
+    if isnothing(i) i = length(M) end
+    length(x) / (2 * sum(M[1:i-1]) - 1)
+end
 
-ess(x::Matrix, N, agg) = agg(vec(N ./ (2 .* sum(abs.(x), dims = 1) .- 1)))
-
-ess(x::Samples, agg) = ess(autocor(x), length(x), agg) 
+ess(x::Samples) = [z |> ess for z in x |> values |> transpose |> eachcol]
 
 acceptrate(x::Samples) = sum(s.acceptrate * s.nsteps for s in x) / sum(s.nsteps for s in x)
 
@@ -14,19 +19,18 @@ ndivergences(x::Samples) = sum(s.diverged for s in x)
 
 function Base.summary(S::Samples)
     rnd(x) = round(x; digits = 3)
-    qs = (0, 0.1, 0.5, 0.9, 1)
-    N, ac = length(S), autocor(S)
+    qs, N, E = (0, 0.1, 0.5, 0.9, 1), length(S), ess(S)
+    Emin = argmin(E)
     println("Number of free variables: ", length(S[1].value))
     println("Number of samples: ", N)
-    println("Minimum ESS: ", rnd(ess(ac, N, minimum)))
-    println("Average ESS: ", rnd(ess(ac, N, mean)))
+    println("Minimum ESS: ", E[Emin] |> rnd, "($Emin)")
+    println("Average ESS: ", mean(E) |> rnd)
     println("Highest autocorr: ", ess(ac, N, argmax))
-    println("Acceptance rate: ", rnd(acceptrate(S)))
-    println("Divergences: ", rnd(ndivergences(S)))
-    println("N minESS per 100 steps: ", rnd(100*ess(ac, N, minimum) / sum(s.nsteps for s in S)))
-    println("Number of steps: ", rnd.(quantile([s.nsteps for s in S], qs)))
-    println("Posterior ll: ", rnd.(quantile([s.ll for s in S], qs)))
-    if N > 5 print("Autocorrelation τ¹⁻³: ", rnd.(vec(mean(ac[2:4, :], dims = 2)))) end
+    println("Acceptance rate: ", acceptrate(S)) |> rnd
+    println("Divergences: ", ndivergences(S)) |> rnd
+    println("N minESS per 100 steps: ", rnd(E[Emin] / [s.nsteps for s in S][Emin]))
+    println("Number of steps: ", quantile([s.nsteps for s in S], qs)) .|> rnd
+    println("Posterior ll: ", quantile([s.ll for s in S], qs) .|> rnd)
 end
 
 # QT plot
