@@ -25,7 +25,6 @@ function Base.summary(S::Samples)
     println("Number of samples: ", N)
     println("Minimum ESS: ", E[Emin] |> rnd, "($Emin)")
     println("Average ESS: ", mean(E) |> rnd)
-    println("Highest autocorr: ", ess(ac, N, argmax))
     println("Acceptance rate: ", acceptrate(S)) |> rnd
     println("Divergences: ", ndivergences(S)) |> rnd
     println("N minESS per 100 steps: ", rnd(E[Emin] / [s.nsteps for s in S][Emin]))
