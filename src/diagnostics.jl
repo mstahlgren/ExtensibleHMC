@@ -25,10 +25,10 @@ function Base.summary(S::Samples)
     println("Number of samples: ", N)
     println("Minimum ESS: ", E[Emin] |> rnd, "($Emin)")
     println("Average ESS: ", mean(E) |> rnd)
-    println("Acceptance rate: ", acceptrate(S)) |> rnd
-    println("Divergences: ", ndivergences(S)) |> rnd
+    println("Acceptance rate: ", acceptrate(S) |> rnd)
+    println("Divergences: ", ndivergences(S) |> rnd)
     println("N minESS per 100 steps: ", rnd(E[Emin] / [s.nsteps for s in S][Emin]))
-    println("Number of steps: ", quantile([s.nsteps for s in S], qs)) .|> rnd
+    println("Number of steps: ", quantile([s.nsteps for s in S], qs) .|> rnd)
     println("Posterior ll: ", quantile([s.ll for s in S], qs) .|> rnd)
 end
 
