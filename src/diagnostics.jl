@@ -2,13 +2,14 @@ Base.values(x::Samples) = reduce(hcat, vec(s.value) for s in x)
 
 Base.values(x::Samples, idx...) = reduce(hcat, s.value[[idx...]] for s in x)
 
+# This implementation differs from standard ones, but gives much better (?) results for negative autocorrelations.
 function ess(x)
     a = autocor(x)    
     l = length(a) + iseven(length(a)) - 1
     M = a[1:2:l] .+ a[2:2:l]
     i = findfirst(x->x<0, M)
-    if isnothing(i) i = length(M) end
-    length(x) / (2 * sum(M[1:i-1]) - 1)
+    if isnothing(i) i = length(M)+1 end
+    length(x) / sum(M[1:i-1])
 end
 
 ess(x::Samples) = [z |> ess for z in x |> values |> transpose |> eachcol]
