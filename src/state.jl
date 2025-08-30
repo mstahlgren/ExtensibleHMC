@@ -31,7 +31,7 @@ energy(s::State) = s.ke - s.ll
 function leapfrog(θ, s₀, ϵ, buffer)
     q₁, p₁ = pop!(buffer), pop!(buffer)
     p₁ .= p(s₀) .+ 0.5 .* ϵ .* a(s₀)
-    q₁ .= q(s₀) .+ ϵ .* v(θ, p₁) # v allocates for non unit masses
+    q₁ .= q(s₀) .+ ϵ .* v(θ, p₁)
     ll, a₁ = θ(q₁, a(s₀))
     p₁ .+= 0.5 .* ϵ .* a₁
     return State(q₁, p₁, a₁, ll, kinetic(θ, p₁))
