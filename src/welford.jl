@@ -1,4 +1,4 @@
-struct Welford{T, S <: AbstractVecOrMat{T}}
+#= struct Welford{T, S <: AbstractVecOrMat{T}}
     n::Int
     mean::S
     M2::S
@@ -36,4 +36,4 @@ function colsum(w::Welford)
         na += nb
     end
     Welford{eltype(m), typeof(m)}(na, m, m2)
-end
+end =#
