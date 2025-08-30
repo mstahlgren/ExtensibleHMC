@@ -30,7 +30,7 @@ function (m::TriDiagMass)(samples, ν = 0.0)
     ev⁻¹ = sum(view(W, 1:N-1, :) .* view(W, 2:N, :), dims = 2) |> vec
     N₀ = round(ν * m.N)
     Nₛ = Int(N₀ + length(samples))
-    M⁻¹ = SymTridiagonal((N₀ .* m.M⁻¹.dv .+ dv⁻¹) ./ Nₛ, (N₀ .* m.M⁻¹.ev .+ ev⁻¹) ./ (1.5*Nₛ))
+    M⁻¹ = SymTridiagonal((N₀ .* m.M⁻¹.dv .+ dv⁻¹) ./ Nₛ, (N₀ .* m.M⁻¹.ev .+ ev⁻¹) ./ Nₛ)
     McL = factorise(M⁻¹)
     TriDiagMass(m.R, m.C, Nₛ, McL, M⁻¹)
 end
