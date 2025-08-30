@@ -6,9 +6,11 @@ struct MNUTS <: Sampler
     max_ΔE::Float64
 end
 
-MNUTS(ϵ) = MNUTS(ϵ, 10, 1000)
+MNUTS(ϵ, max_depth = 10) = MNUTS(ϵ, max_depth, 1000)
 
-(s::MNUTS)(ϵ) = MNUTS(ϵ, s.max_depth, s.max_ΔE)
+buffsize(ϕ::MNUTS) = 3 * (2^(ϕ.max_depth+1)-1) + 5 # 5 => 63 => 193, 6 => 127 => 385, 7 => 255 => 769
+
+#(s::MNUTS)(ϵ) = MNUTS(ϵ, s.max_depth, s.max_ΔE)
 
 struct BinaryTree{T}
     left::State{T}
@@ -46,7 +48,7 @@ function uturn(θ::Hamiltonian, t::T, l::T, r::T, buffer) where T <: BinaryTree
     return outer || left || right
 end
 
-function sample(ϕ::MNUTS, θ::Hamiltonian, q₀, buffer::Buffer = Buffer(ϕ, q₀))
+function sample(ϕ::MNUTS, θ::Hamiltonian, q₀, buffer::Buffer = Buffer(length(q₀), buffsize(ϕ)))
     tree = BinaryTree(θ, q₀, buffer)
     E₀, turned, div = energy(tree.prop), false, false
     for j = 0:ϕ.max_depth
