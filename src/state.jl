@@ -6,12 +6,10 @@ struct State{T <: AbstractArray}
     ke::Float64
 end
 
-#= function State(θ, q₀)
-    p, ll, Δll  = refresh(θ), θ(q₀)...
-    return State(copy(q₀), p, Δll, ll, kinetic(θ, p))
-end =#
-
 function State(θ, q₀, buffer)
+    println("hello")
+    display(111111111)
+    display(θ)
     p, ll, Δll = refresh(θ, buffer), θ(q₀, pop!(buffer))...
     return State(copy!(pop!(buffer), q₀), p, Δll, ll, kinetic(θ, p))
 end

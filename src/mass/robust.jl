@@ -20,16 +20,13 @@ function (m::RobustMass)(samples, η = 0.0)
     RobustMass(Symmetric(Σ), L, ν + n)
 end
 
-Base.rand(m::RobustMass, buffer) = begin
+function Base.rand(m::RobustMass, buffer)
     buf = pop!(buffer)
     buf .= m.L' \ randn(size(m.L, 2))
-    return buf
+    buf
 end
 
 Base.:\(m::RobustMass, x) = m.Σ * x
 
-function Base.show(io::IO, m::RobustMass)
+Base.show(io::IO, m::RobustMass) =
     println("Robust mass with $(size(m.L, 1)) parameters and $(m.ν) df")
-end
-
-#LinearAlgebra.logabsdet(m::RobustMass) = -2 * sum(log.(m.L.dv))

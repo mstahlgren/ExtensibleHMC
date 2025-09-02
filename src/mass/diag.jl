@@ -17,10 +17,4 @@ Base.rand(m::DiagMass, buffer) = begin
     return x
 end
 
-Base.size(m::DiagMass) = size(m.M⁻¹)
-
 Base.:\(m::DiagMass, x) = m.M⁻¹ .* x
-
-Base.:+(x::T, y::T) where T <: DiagMass = T((x.M⁻¹ .+ y.M⁻¹) ./ 2, x.N + y.N)
-
-LinearAlgebra.logabsdet(m::DiagMass) = -sum(log.(m.M⁻¹))
