@@ -1,3 +1,5 @@
+import LinearAlgebra: dot
+
 struct Hamiltonian{P, M <: AbstractMass}
     density::P # Unnormalized log likelihood, gradient
     mass::M

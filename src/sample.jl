@@ -16,7 +16,7 @@ function sample(fun::Function, q::AbstractArray, n::Int, step = 0.05)
 end
 
 function sample(ϕ::Sampler, θ::Hamiltonian, q::T, n::Int; verbose = false) where T <: AbstractArray
-    buffer = Buffer(length(q), buffsize(ϕ))
+    buffer = Buffer(ϕ, length(q))
     samples = Samples{T}(undef, n)
     for i in 1:n
         s = sample(ϕ, θ, q, buffer)

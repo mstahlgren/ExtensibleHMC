@@ -1,5 +1,8 @@
 # Multinominal No U-Turn Sampler with robust generalized U-turn criteria.
 
+import LinearAlgebra: ⋅
+import LogExpFunctions: logaddexp
+
 struct MNUTS <: Sampler
     ϵ::Float64
     max_depth::Int
@@ -21,8 +24,10 @@ struct BinaryTree{T}
 end
 
 function BinaryTree(θ::Hamiltonian, q₀, buffer)
-    display("hefheurheirhheurherhue")
     s = State(θ, q₀, buffer)
+    display(q(s))
+    display(p(s))
+    display(copy!(pop!(buffer), a(s)))
     ls = State(q(s), p(s), copy!(pop!(buffer), a(s)), ll(s), ke(s))
     BinaryTree(ls, s, s, p(s), 0.0, 0.0, 0)
 end
@@ -47,8 +52,7 @@ function uturn(θ::Hamiltonian, t::T, l::T, r::T, buffer) where T <: BinaryTree
     return outer || left || right
 end
 
-function sample(ϕ::MNUTS, θ::Hamiltonian, q₀, buffer::Buffer = Buffer(length(q₀), buffsize(ϕ)))
-    display("gegegegege")
+function sample(ϕ::MNUTS, θ::Hamiltonian, q₀, buffer::Buffer = Buffer(ϕ, length(q₀)))
     tree = BinaryTree(θ, q₀, buffer)
     E₀, turned, div = energy(tree.prop), false, false
     for j = 0:ϕ.max_depth

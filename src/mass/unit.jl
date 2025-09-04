@@ -1,8 +1,6 @@
-struct UnitMass{D} <: AbstractMass{D}
-    size::NTuple{D, Int}
+struct UnitMass <: AbstractMass
+    size::Int
 end
-
-UnitMass(size...) = UnitMass{length(size)}(size)
 
 (m::UnitMass)(samples, ν) = m
 

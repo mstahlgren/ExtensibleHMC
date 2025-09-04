@@ -1,4 +1,7 @@
-struct RobustMass{T} <: AbstractMass{2}
+import LinearAlgebra: I, Symmetric, LowerTriangular, cholesky
+import Statistics: mean
+
+struct RobustMass{T} <: AbstractMass
     Σ::Symmetric{T, Matrix{T}}
     L::LowerTriangular{T}
     ν::Int
@@ -22,7 +25,7 @@ end
 
 function Base.rand(m::RobustMass, buffer)
     buf = pop!(buffer)
-    buf .= m.L' \ randn(size(m.L, 2))
+    buf .= m.L' \ randn!(peek(buffer))
     buf
 end
 

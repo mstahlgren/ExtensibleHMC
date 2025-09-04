@@ -1,19 +1,14 @@
+import FixedSizeArrays: FixedSizeVector
+
 mutable struct Buffer
-    const values  ::Matrix{Float64}
-    current       ::Int
+    const values  ::Vector{FixedSizeVector{Float64}}
+    used          ::Int
 end
 
-Buffer(m::Int, n) = Buffer(Matrix{Float64}(undef, m, n), 1)
+Buffer(ϕ::Sampler, m::Int) = Buffer([FixedSizeVector{Float64}(undef, m) for _ in 1:buffsize(ϕ)], 0)
 
-reset!(b::Buffer) = b.current = 1
+reset!(b::Buffer) = b.used = 0
 
-function Base.pop!(b::Buffer)
-    if b.current > size(b.values, 2) BoundsError(b, b.current) |> throw end
-    b.current += 1
-    return @inbounds view(b.values, :, b.current - 1)
-end
+Base.pop!(b::Buffer) = b.values[b.used += 1]
 
-function peek(b::Buffer)
-    if b.current > size(b.values, 2) BoundsError(b, b.current) |> throw end
-    return @inbounds view(b.values, :, b.current)
-end
+Base.peek(b::Buffer) = b.values[b.used + 1]

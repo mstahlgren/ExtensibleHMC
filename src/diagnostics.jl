@@ -1,3 +1,7 @@
+import Statistics: mean, quantile
+import StatsBase: autocor
+import RecipesBase: @recipe
+
 Base.values(x::Samples) = reduce(hcat, vec(s.value) for s in x)
 
 Base.values(x::Samples, idx...) = reduce(hcat, s.value[[idx...]] for s in x)

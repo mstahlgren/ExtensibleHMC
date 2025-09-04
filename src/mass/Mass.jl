@@ -1,6 +1,6 @@
-abstract type AbstractMass{D} end
+import Random: randn!
 
-Base.length(m::AbstractMass) = prod(size(m))
+abstract type AbstractMass end
 
 include("unit.jl")
 include("diag.jl")

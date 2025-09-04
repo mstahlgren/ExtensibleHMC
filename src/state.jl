@@ -7,9 +7,6 @@ struct State{T <: AbstractArray}
 end
 
 function State(θ, q₀, buffer)
-    println("hello")
-    display(111111111)
-    display(θ)
     p, ll, Δll = refresh(θ, buffer), θ(q₀, pop!(buffer))...
     return State(copy!(pop!(buffer), q₀), p, Δll, ll, kinetic(θ, p))
 end
