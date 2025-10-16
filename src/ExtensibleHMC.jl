@@ -9,7 +9,7 @@ export rosenbrock
 include("state.jl")
 
 include("mass/Mass.jl")
-export AbstractMass, UnitMass, DiagMass, RobustMass
+export AbstractMass, UnitMass, DiagMass, RobustMass, resize
 
 include("hamiltonian.jl")
 export Hamiltonian

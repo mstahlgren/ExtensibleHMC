@@ -1,16 +1,20 @@
 import LinearAlgebra: I, Symmetric, LowerTriangular, cholesky
 import Statistics: mean
 
-struct RobustMass{T} <: AbstractMass
-    Σ::Symmetric{T, Matrix{T}}
+struct RobustMass{T, S} <: AbstractMass
+    Σ::Symmetric{T, S}
     L::LowerTriangular{T}
     ν::Int
 end
 
 function RobustMass(m)
-    Σ = Matrix{Float64}(I, m, m) |> Symmetric
-    L = Matrix{Float64}(I, m, m) |> LowerTriangular
-    RobustMass{Float64}(Σ, L, 1)
+    RobustMass{Float64}(m)
+end
+
+function RobustMass{T}(m) where T
+    Σ = Matrix{T}(I, m, m) |> Symmetric
+    L = Matrix{T}(I, m, m) |> LowerTriangular
+    RobustMass(Σ, L, 1)
 end
 
 function (m::RobustMass)(samples, η = 0.0)

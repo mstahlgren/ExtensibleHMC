@@ -25,9 +25,6 @@ end
 
 function BinaryTree(θ::Hamiltonian, q₀, buffer)
     s = State(θ, q₀, buffer)
-    display(q(s))
-    display(p(s))
-    display(copy!(pop!(buffer), a(s)))
     ls = State(q(s), p(s), copy!(pop!(buffer), a(s)), ll(s), ke(s))
     BinaryTree(ls, s, s, p(s), 0.0, 0.0, 0)
 end
