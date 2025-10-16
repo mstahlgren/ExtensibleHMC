@@ -12,7 +12,7 @@ function sample(m::AbstractModel, n::Int, args...)
     sample(sampler(m), hamiltonian(m, args...), init(m), n)
 end
 
-function adapt(m::AbstractModel, epochs, n, args...)
-    ϕ, θ, q = adapt(sampler(m), hamiltonian(m, args...), init(m), epochs, n)
+function adapt(m::AbstractModel, epochs, n, β, args...)
+    ϕ, θ, q = adapt(sampler(m), hamiltonian(m, args...), init(m), epochs, n, β)
     set(m; m = θ.mass, s = ϕ.ϵ, i = q)
 end

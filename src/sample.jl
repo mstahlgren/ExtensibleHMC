@@ -31,13 +31,14 @@ function sample(ϕ::Sampler, θ::Hamiltonian, q::T, n::Int; verbose = false) whe
     return samples
 end
 
-function adapt(ϕ::Sampler, θ::Hamiltonian, q, epochs, n)
+function adapt(ϕ::Sampler, θ::Hamiltonian, q, epochs, n, β)
     for e in 1:epochs
         S = sample(ϕ, θ, q, n)
         α, q = acceptrate(S), last(S).value
         ν = if α > 0.9 1.0/0.90 elseif α < 0.7 0.90 else 1.0 end
-        ϕ, θ = ϕ(ϕ.ϵ * ν), θ(θ.mass(S, 0.95)) 
-        println("Epoch $e completed :: step $(ϕ.ϵ)")
+        ϕ = MNUTS(ϕ.ϵ * ν, ϕ.max_depth)
+        θ = α > 0.4 ? θ(θ.mass(S, β)) : θ
+        println("Epoch $e completed :: accept $α :: step $(ϕ.ϵ)")
     end
     return ϕ, θ, q
 end
