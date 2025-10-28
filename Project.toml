@@ -1,7 +1,7 @@
 name = "ExtensibleHMC"
 uuid = "abc9d2d2-04d7-4b9f-b395-0339a31a96f1"
 authors = ["Martin Ståhlgren <martin.stahlgren@gmail.com>"]
-version = "0.5.2"
+version = "0.5.3"
 
 [deps]
 FixedSizeArrays = "3821ddf9-e5b5-40d5-8e25-6813ab96b5e2"
