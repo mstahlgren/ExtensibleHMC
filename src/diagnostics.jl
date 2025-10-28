@@ -32,7 +32,7 @@ function Base.summary(S::Samples)
     println("Average ESS: ", mean(E) |> rnd)
     println("Acceptance rate: ", acceptrate(S) |> rnd)
     println("Divergences: ", ndivergences(S) |> rnd)
-    println("N minESS / steps: ", E[Emin] / sum([s.nsteps for s in S]))
+    println("N minESS / steps: ", E[Emin] / mean([s.nsteps for s in S]))
     println("Number of steps: ", quantile([s.nsteps for s in S], qs) .|> rnd)
     println("Posterior ll: ", quantile([s.ll for s in S], qs) .|> rnd)
 end
