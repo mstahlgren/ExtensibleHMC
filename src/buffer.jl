@@ -1,7 +1,7 @@
 import FixedSizeArrays: FixedSizeVector
 
 mutable struct Buffer
-    const values  ::Vector{FixedSizeVector{Float64}}
+    const values  ::Vector{FixedSizeVector{Float64}, Memory{Float64}}
     used          ::Int
 end
 
